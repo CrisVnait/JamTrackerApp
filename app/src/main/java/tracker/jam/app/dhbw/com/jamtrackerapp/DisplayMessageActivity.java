@@ -31,7 +31,8 @@ public class DisplayMessageActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            textView.setText(new JSONObject(response).getJSONObject("density").toString());
+                            String jsonString = response.substring(1, response.length()-1).replace("\\", "");
+                            textView.setText(String.valueOf(new JSONObject(jsonString).getInt("density")));
                         } catch (JSONException e) {
                             textView.setText("parse error");
                         }
