@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Jam Tracker App</string>
     <string name="button_test">Test</string>
+    <string name="placeholder">Platzhalter</string>
+    <string name="cam_ka_nord">Karlsruhe Nord</string>
+    <string name="cam_ka_mitte">Karlsruhe Mitte</string>
+    <string name="cam_ka_dreieck">Dreieck Karlsruhe</string>
+    <string name="cam_ettlingen">Ettlingen</string>
 </resources>
