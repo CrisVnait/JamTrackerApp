@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Jam Tracker App</string>
+    <string name="app_name">Jam Tracker</string>
     <string name="button_test">Test</string>
     <string name="placeholder">Platzhalter</string>
     <string name="cam_ka_nord">Karlsruhe Nord</string>
