@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        textViewNordDensity.setText("request error");
-                        textViewMitteDensity.setText("request error");
-                        textViewDreieckDensity.setText("request error");
-                        textViewEttlingenDensity.setText("request error");
+                        textViewNordDensity.setText("request");
+                        textViewMitteDensity.setText("error");
+                        textViewDreieckDensity.setText("request");
+                        textViewEttlingenDensity.setText("error");
                     }
                 });
 
