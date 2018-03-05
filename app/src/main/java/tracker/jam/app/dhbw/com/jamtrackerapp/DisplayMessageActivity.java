@@ -1,20 +1,24 @@
 package tracker.jam.app.dhbw.com.jamtrackerapp;
 
-import android.support.v7.app.AppCompatActivity;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 
 public class DisplayMessageActivity extends AppCompatActivity {
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest mLocationRequest;
+    private LocationCallback mLocationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,28 +26,52 @@ public class DisplayMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_message);
 
         final TextView textView = findViewById(R.id.textView);
-        String url = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
+        final TextView textView2 = findViewById(R.id.textView2);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            textView.setText(String.valueOf(new JSONObject(response).getInt("eins")));
-                        } catch (JSONException e) {
-                            textView.setText("parse error");
-                        }
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(500);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                textView2.setText(String.valueOf(locationResult.getLocations().size()));
+
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        textView.setText(location.getLatitude() + " ; " + location.getLongitude());
+                    } else {
+                        textView.setText("Location is null");
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        textView.setText("request error");
-                    }
-                });
+                }
+            }
+        };
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
+        }
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 }
