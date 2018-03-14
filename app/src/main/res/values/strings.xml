@@ -6,4 +6,10 @@
     <string name="cam_ka_mitte">Karlsruhe Mitte</string>
     <string name="cam_ka_dreieck">Dreieck Karlsruhe</string>
     <string name="cam_ettlingen">Ettlingen</string>
+
+    <!-- Transition type strings -->
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+    <string name="geofence_transition_notification_text">Click notification to return to app</string>
 </resources>
