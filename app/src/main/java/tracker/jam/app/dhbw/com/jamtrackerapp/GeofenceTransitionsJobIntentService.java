@@ -59,6 +59,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails);
+            speak();
         } else {
             // Log the error.
         }
@@ -163,6 +164,19 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
         // Issue the notification
         mNotificationManager.notify(0, builder.build());
+    }
+
+    private void speak() {
+
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    textToSpeech.setLanguage(Locale.GERMAN);
+                    textToSpeech.speak("Test", TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+        });
     }
 
 }

@@ -30,10 +30,17 @@ final class Constants {
     private Constants() {
     }
 
-    static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = Geofence.NEVER_EXPIRE;
-    static final float GEOFENCE_RADIUS_IN_METERS = 100
-            ;
+    //Geocoder
+    public static final int SUCCESS_RESULT = 0;
+    public static final int FAILURE_RESULT = 1;
+    public static final String PACKAGE_NAME = "tracker.jam.app.dhbw.com.jamtrackerapp";
+    public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
+    public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
+    public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_DATA_EXTRA";
 
+    //Geofencing
+    static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = Geofence.NEVER_EXPIRE;
+    static final float GEOFENCE_RADIUS_IN_METERS = 100;
     static final HashMap<String, LatLng> GATEWAY_LANDMARKS = new HashMap<>();
 
     static {
