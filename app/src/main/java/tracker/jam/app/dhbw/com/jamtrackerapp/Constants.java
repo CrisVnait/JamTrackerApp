@@ -30,6 +30,10 @@ final class Constants {
     private Constants() {
     }
 
+    //Density
+    public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
+
+
     //Geocoder
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;

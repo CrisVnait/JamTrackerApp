@@ -16,8 +16,6 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String SERVER_URL = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView textViewDreieckDensity = findViewById(R.id.textViewDreieckDensity);
         final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, SERVER_URL,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
