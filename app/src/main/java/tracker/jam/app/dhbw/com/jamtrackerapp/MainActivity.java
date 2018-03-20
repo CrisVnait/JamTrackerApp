@@ -1,9 +1,7 @@
 package tracker.jam.app.dhbw.com.jamtrackerapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -25,14 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         displayDensity();
-    }
-
-    /**
-     * Called when the user taps the test button
-     */
-    public void testButton(View view) {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        startActivity(intent);
     }
 
     public void displayDensity() {
