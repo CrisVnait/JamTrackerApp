@@ -91,29 +91,10 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            textViewNordDensity.setText(String.valueOf(new JSONObject(response).getInt("eins")));
-                        } catch (JSONException e) {
-                            textViewNordDensity.setText("parse error");
-                        }
-
-                        try {
-                            textViewMitteDensity.setText(String.valueOf(new JSONObject(response).getInt("zwei")));
-                        } catch (JSONException e) {
-                            textViewMitteDensity.setText("parse error");
-                        }
-
-                        try {
-                            textViewDreieckDensity.setText(String.valueOf(new JSONObject(response).getInt("drei")));
-                        } catch (JSONException e) {
-                            textViewDreieckDensity.setText("parse error");
-                        }
-
-                        try {
-                            textViewEttlingenDensity.setText(String.valueOf(new JSONObject(response).getInt("vier")));
-                        } catch (JSONException e) {
-                            textViewEttlingenDensity.setText("parse error");
-                        }
+                        textViewSetText(textViewNordDensity, response, "eins");
+                        textViewSetText(textViewMitteDensity, response, "zwei");
+                        textViewSetText(textViewDreieckDensity, response, "drei");
+                        textViewSetText(textViewEttlingenDensity, response, "vier");
                     }
                 },
                 new Response.ErrorListener() {
@@ -128,6 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(stringRequest);
+    }
+
+    private void textViewSetText(TextView textView, String response , String name){
+        try {
+            textView.setText(String.valueOf(new JSONObject(response).getInt(name)));
+        } catch (JSONException e) {
+            textView.setText("parse error");
+        }
     }
 
     private void requestLocation() {
