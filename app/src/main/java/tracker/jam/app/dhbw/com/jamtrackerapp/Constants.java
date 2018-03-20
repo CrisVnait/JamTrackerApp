@@ -30,9 +30,14 @@ final class Constants {
     private Constants() {
     }
 
+    //Locations
+    public static final String DHBW = "DHBW";
+    public static final String HOME = "HOME";
+    public static final String BHF = "BHF";
+    public static final String HOME_ACHERN = "HOME_ACHERN";
+
     //Density
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
-
 
     //Geocoding
     public static final int SUCCESS_RESULT = 0;
@@ -48,8 +53,9 @@ final class Constants {
     static final HashMap<String, LatLng> GATEWAY_LANDMARKS = new HashMap<>();
 
     static {
-        GATEWAY_LANDMARKS.put("HOME", new LatLng(49.00852, 8.39602));
-        GATEWAY_LANDMARKS.put("DHBW", new LatLng(49.026676, 8.385947));
-        GATEWAY_LANDMARKS.put("HOME_ACHERN", new LatLng(48.6272, 8.066246));
+        GATEWAY_LANDMARKS.put(DHBW, new LatLng(49.026676, 8.385947));
+        GATEWAY_LANDMARKS.put(HOME, new LatLng(49.00852, 8.39602));
+        GATEWAY_LANDMARKS.put(BHF, new LatLng(48.993546, 8.400808));
+        GATEWAY_LANDMARKS.put(HOME_ACHERN, new LatLng(48.6272, 8.066246));
     }
 }

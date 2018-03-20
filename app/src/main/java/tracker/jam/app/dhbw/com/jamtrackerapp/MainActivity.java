@@ -48,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
     final TextView textViewDreieckDensity = findViewById(R.id.textViewDreieckDensity);
     final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
 
+    //Location's
+    final Location locationNord = new Location(Constants.DHBW);
+    final Location locationMitte = new Location(Constants.HOME);
+    final Location locationDreieck = new Location(Constants.BHF);
+    final Location locationEttlingen = new Location(Constants.HOME_ACHERN);
+
     //Location request
     private FusedLocationProviderClient locationClient;
     private LocationRequest locationRequest;
@@ -67,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+
+        setLocationLatLng();
         addGeofences();
         requestLocation();
         resultReceiver = new AddressResultReceiver(new Handler());
@@ -114,6 +122,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopLocationUpdates() {
         locationClient.removeLocationUpdates(locationCallback);
+    }
+
+    private void setLocationLatLng() {
+        locationNord.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.DHBW).latitude);
+        locationNord.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.DHBW).longitude);
+        locationMitte.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).latitude);
+        locationMitte.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).longitude);
+        locationDreieck.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.BHF).latitude);
+        locationDreieck.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.BHF).longitude);
+        locationEttlingen.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).latitude);
+        locationEttlingen.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).longitude);
     }
 
     public void displayDensity() {
