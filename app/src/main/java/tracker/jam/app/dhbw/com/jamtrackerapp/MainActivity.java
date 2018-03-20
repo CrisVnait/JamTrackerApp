@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                         actualLocation = location;
                         displayDensity();
+                        displayDistances(location);
                         textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
                         startAddressIntentService();
 
@@ -155,6 +156,18 @@ public class MainActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(stringRequest);
+    }
+
+    private void displayDistances(Location location) {
+        final TextView textViewNordDistance = findViewById(R.id.textViewNordDistance);
+        final TextView textViewMitteDistance = findViewById(R.id.textViewMitteDistance);
+        final TextView textViewDreieckDistance = findViewById(R.id.textViewDreieckDistance);
+        final TextView textViewEttlingenDistance = findViewById(R.id.textViewEttlingenDistance);
+
+        textViewNordDistance.setText(String.valueOf(location.distanceTo(locationNord)));
+        textViewMitteDistance.setText(String.valueOf(location.distanceTo(locationMitte)));
+        textViewDreieckDistance.setText(String.valueOf(location.distanceTo(locationDreieck)));
+        textViewEttlingenDistance.setText(String.valueOf(location.distanceTo(locationEttlingen)));
     }
 
     private void textViewSetText(TextView textView, String response, String name) {
