@@ -39,15 +39,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TextView's
-    final TextView textViewCoordinates = findViewById(R.id.textViewCoordinates);
-    final TextView textViewAddress = findViewById(R.id.textViewAddress);
-    final TextView textViewGeofences = findViewById(R.id.textViewGeofences);
-    final TextView textViewNordDensity = findViewById(R.id.textViewNordDensity);
-    final TextView textViewMitteDensity = findViewById(R.id.textViewMitteDensity);
-    final TextView textViewDreieckDensity = findViewById(R.id.textViewDreieckDensity);
-    final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
-
     //Location's
     final Location locationNord = new Location(Constants.DHBW);
     final Location locationMitte = new Location(Constants.HOME);
@@ -74,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final TextView textViewCoordinates = findViewById(R.id.textViewCoordinates);
 
         setLocationLatLng();
         addGeofences();
@@ -136,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayDensity() {
+        final TextView textViewNordDensity = findViewById(R.id.textViewNordDensity);
+        final TextView textViewMitteDensity = findViewById(R.id.textViewMitteDensity);
+        final TextView textViewDreieckDensity = findViewById(R.id.textViewDreieckDensity);
+        final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
                 new Response.Listener<String>() {
                     @Override
@@ -184,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class AddressResultReceiver extends ResultReceiver {
+        final TextView textViewAddress = findViewById(R.id.textViewAddress);
+
         public AddressResultReceiver(Handler handler) {
             super(handler);
         }
@@ -203,6 +202,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addGeofences() {
+        final TextView textViewGeofences = findViewById(R.id.textViewGeofences);
+
         geofenceList = new ArrayList<>();
         geofencePendingIntent = null;
         populateGeofenceList();
