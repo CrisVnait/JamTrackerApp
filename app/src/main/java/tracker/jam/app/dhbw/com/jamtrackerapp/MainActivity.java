@@ -1,9 +1,12 @@
 package tracker.jam.app.dhbw.com.jamtrackerapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
+    //Geocoding
+    private Location actualLocation;
+    private AddressResultReceiver resultReceiver;
+    private String addressOutput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         displayDensity();
+        resultReceiver = new AddressResultReceiver(new Handler());
 
         requestLocation();
         locationCallback = new LocationCallback() {
@@ -54,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
+                        actualLocation = location;
                         textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
+                        startIntentService();
                     } else {
                         textViewCoordinates.setText("Location is null");
                     }
@@ -126,4 +136,31 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(500);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
+    protected void startIntentService() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, resultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, actualLocation);
+        startService(intent);
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if (resultData == null) {
+                return;
+            }
+
+            addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            if (addressOutput == null) {
+                addressOutput = "";
+            }
+            textViewAddress.setText(addressOutput);
+        }
+    }
+
 }

@@ -34,7 +34,7 @@ final class Constants {
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
 
 
-    //Geocoder
+    //Geocoding
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;
     public static final String PACKAGE_NAME = "tracker.jam.app.dhbw.com.jamtrackerapp";

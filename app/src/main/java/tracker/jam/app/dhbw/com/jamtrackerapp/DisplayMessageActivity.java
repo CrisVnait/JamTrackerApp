@@ -6,12 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -30,10 +27,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
     private PendingIntent mGeofencePendingIntent;
     private GeofencingClient mGeofencingClient;
 
-    private Location actualLocation;
-    private AddressResultReceiver mResultReceiver;
-    private String mAddressOutput;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +42,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
         final Location home_achern = new Location("Home Achern");
         home_achern.setLatitude(48.6272);
         home_achern.setLongitude(8.066246);
-
-        actualLocation = home;
-
-        mResultReceiver = new AddressResultReceiver(new Handler());
-        startIntentService();
 
 
         mGeofenceList = new ArrayList<>();
@@ -110,37 +98,4 @@ public class DisplayMessageActivity extends AppCompatActivity {
         mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;
     }
-
-    protected void startIntentService() {
-        Intent intent = new Intent(this, FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, actualLocation);
-        startService(intent);
-    }
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            final TextView button1 = findViewById(R.id.textView4);
-
-            if (resultData == null) {
-                return;
-            }
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            if (mAddressOutput == null) {
-                mAddressOutput = "";
-            }
-            button1.setText(mAddressOutput);
-
-        }
-    }
-
 }
