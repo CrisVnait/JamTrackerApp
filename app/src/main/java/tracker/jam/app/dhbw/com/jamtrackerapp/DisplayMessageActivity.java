@@ -13,13 +13,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,9 +26,6 @@ import java.util.Map;
 
 public class DisplayMessageActivity extends AppCompatActivity {
 
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest mLocationRequest;
-    private LocationCallback mLocationCallback;
     private ArrayList<Geofence> mGeofenceList;
     private PendingIntent mGeofencePendingIntent;
     private GeofencingClient mGeofencingClient;
@@ -45,10 +38,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
-
-        final TextView textView = findViewById(R.id.textView);
-        final TextView textView2 = findViewById(R.id.textView2);
-        final TextView textView4 = findViewById(R.id.textView4);
 
         //final Location home = new Location("Home");
         final Location home = new Location("Home");
@@ -63,29 +52,9 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
         actualLocation = home;
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(500);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mResultReceiver = new AddressResultReceiver(new Handler());
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
+        startIntentService();
 
-                for (Location location : locationResult.getLocations()) {
-                    if (location != null) {
-                        actualLocation = location;
-                        textView.setText(location.getLatitude() + " ; " + location.getLongitude());
-                        textView2.setText(location.distanceTo(home) + " ; " + location.distanceTo(dhbw) + " ; " + location.distanceTo(home_achern));
-                        startIntentService();
-                    } else {
-                        textView.setText("Location is null");
-                    }
-                }
-            }
-        };
 
         mGeofenceList = new ArrayList<>();
         mGeofencePendingIntent = null;
@@ -108,29 +77,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
                         textView4.setText("Failed to add geofences");
                     }
                 });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startLocationUpdates();
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
-        }
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
     private void populateGeofenceList() {
