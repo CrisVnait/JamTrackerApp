@@ -164,10 +164,15 @@ public class MainActivity extends AppCompatActivity {
         final TextView textViewDreieckDistance = findViewById(R.id.textViewDreieckDistance);
         final TextView textViewEttlingenDistance = findViewById(R.id.textViewEttlingenDistance);
 
-        textViewNordDistance.setText(String.valueOf(location.distanceTo(locationNord)));
-        textViewMitteDistance.setText(String.valueOf(location.distanceTo(locationMitte)));
-        textViewDreieckDistance.setText(String.valueOf(location.distanceTo(locationDreieck)));
-        textViewEttlingenDistance.setText(String.valueOf(location.distanceTo(locationEttlingen)));
+        textViewNordDistance.setText(getFormatDistance(location.distanceTo(locationNord)));
+        textViewMitteDistance.setText(getFormatDistance(location.distanceTo(locationMitte)));
+        textViewDreieckDistance.setText(getFormatDistance(location.distanceTo(locationDreieck)));
+        textViewEttlingenDistance.setText(getFormatDistance(location.distanceTo(locationEttlingen)));
+    }
+
+    private String getFormatDistance(Float distance) {
+        return String.format("%.1f", distance * 0.001);
+
     }
 
     private void textViewSetText(TextView textView, String response, String name) {
