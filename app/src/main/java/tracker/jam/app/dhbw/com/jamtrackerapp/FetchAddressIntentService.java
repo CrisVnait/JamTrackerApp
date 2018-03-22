@@ -63,13 +63,16 @@ public class FetchAddressIntentService extends IntentService {
             }
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
-            Address address = addresses.get(0);
+            Address address;
             ArrayList<String> addressFragments = new ArrayList<String>();
+            for (int j = 0; j < addresses.size(); j++) {
+                address = addresses.get(j);
 
-            // Fetch the address lines using getAddressLine,
-            // join them, and send them to the thread.
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
+                // Fetch the address lines using getAddressLine,
+                // join them, and send them to the thread.
+                for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                    addressFragments.add(address.getAddressLine(i));
+                }
             }
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"),
