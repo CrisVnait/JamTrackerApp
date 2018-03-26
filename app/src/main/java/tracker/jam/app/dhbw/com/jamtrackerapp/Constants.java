@@ -30,7 +30,7 @@ final class Constants {
 
     //Geofencing
     static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = Geofence.NEVER_EXPIRE;
-    static final float GEOFENCE_RADIUS_IN_METERS = 100;
+    static final float GEOFENCE_RADIUS_IN_METERS = 1000;
     static final HashMap<String, LatLng> GATEWAY_LANDMARKS = new HashMap<>();
 
     static {
