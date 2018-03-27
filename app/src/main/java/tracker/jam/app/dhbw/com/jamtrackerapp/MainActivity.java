@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
 
     //Geocoding
-    private Location actualLocation;
+    private Location locationNow;
+    private Location locationBefore;
     private AddressResultReceiver resultReceiver;
     private String addressOutput;
 
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
+    private static boolean isCorrectStreetAndDirection;
+    private int counterWrongStreet;
+    private int counterWrongDirection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView textViewCoordinates = findViewById(R.id.textViewCoordinates);
 
+        isCorrectStreetAndDirection = false;
+        locationNow = null;
+        counterWrongStreet = 0;
+        counterWrongDirection = 0;
         setLocationLatLng();
         addGeofences();
         requestLocation();
@@ -78,13 +86,17 @@ public class MainActivity extends AppCompatActivity {
 
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
-
-                        actualLocation = location;
+                        if (locationNow != null) {
+                            locationBefore = locationNow;
+                        } else {
+                            locationBefore = location;
+                        }
+                        locationNow = location;
                         displayDensity();
                         displayDistances(location);
                         textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
                         startAddressIntentService();
-
+                        checkIfCorrectStreetAndDirection(locationBefore, locationNow);
                     } else {
                         textViewCoordinates.setText("Location is null");
                     }
@@ -194,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     protected void startAddressIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, resultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, actualLocation);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, locationNow);
         startService(intent);
     }
 
@@ -275,5 +287,30 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
+    }
+
+    private void checkIfCorrectStreetAndDirection(Location before, Location now) {
+        float distanceDifference = before.distanceTo(locationEttlingen) - now.distanceTo(locationEttlingen);
+        if (addressOutput.contains(Constants.CORRECT_STREET)) {
+            if (distanceDifference >= -20) {
+                isCorrectStreetAndDirection = true;
+                counterWrongStreet = 0;
+                counterWrongDirection = 0;
+            } else {
+                counterWrongDirection++;
+                if (counterWrongDirection > 3) {
+                    isCorrectStreetAndDirection = false;
+                }
+            }
+        } else {
+            counterWrongStreet++;
+            if (counterWrongStreet > 3) {
+                isCorrectStreetAndDirection = false;
+            }
+        }
+    }
+
+    public static boolean isCorrectStreetAndDirection(){
+        return isCorrectStreetAndDirection;
     }
 }

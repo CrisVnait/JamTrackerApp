@@ -15,7 +15,7 @@ final class Constants {
     public static final String HOME = "HOME";
     public static final String BHF = "BHF";
     public static final String HOME_ACHERN = "HOME_ACHERN";
-    public static final String A5 = "A5";
+    public static final String CORRECT_STREET = "E35";
 
     //Density
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";

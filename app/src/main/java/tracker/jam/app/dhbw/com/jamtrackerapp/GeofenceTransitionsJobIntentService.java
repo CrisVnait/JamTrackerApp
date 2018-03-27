@@ -36,34 +36,36 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(Intent intent) {
-        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-        if (geofencingEvent.hasError()) {
-            int errorCode = geofencingEvent.getErrorCode();
-            sendNotification(String.valueOf(errorCode));
-            return;
+        if (MainActivity.isCorrectStreetAndDirection()) {
+            GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+            if (geofencingEvent.hasError()) {
+                int errorCode = geofencingEvent.getErrorCode();
+                sendNotification(String.valueOf(errorCode));
+                return;
+            }
+
+            // Get the transition type.
+            int geofenceTransition = geofencingEvent.getGeofenceTransition();
+
+            // Test that the reported transition was of interest.
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+                    geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+                // Get the geofences that were triggered. A single event can trigger
+                // multiple geofences.
+                List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+                // Get the transition details as a String.
+                String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
+
+                // Send notification and log the transition details.
+                sendNotification(geofenceTransitionDetails);
+                speak();
+            } else {
+                // Log the error.
+            }
+
         }
-
-        // Get the transition type.
-        int geofenceTransition = geofencingEvent.getGeofenceTransition();
-
-        // Test that the reported transition was of interest.
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
-            // Get the geofences that were triggered. A single event can trigger
-            // multiple geofences.
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-
-            // Get the transition details as a String.
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
-
-            // Send notification and log the transition details.
-            sendNotification(geofenceTransitionDetails);
-            speak();
-        } else {
-            // Log the error.
-        }
-
     }
 
     /**
