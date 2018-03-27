@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView textViewCoordinates = findViewById(R.id.textViewCoordinates);
 
+        if (addressOutput == null) {
+            addressOutput = "";
+        }
         isCorrectStreetAndDirection = false;
         locationNow = null;
         counterWrongStreet = 0;
@@ -310,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static boolean isCorrectStreetAndDirection(){
+    public static boolean isCorrectStreetAndDirection() {
         return isCorrectStreetAndDirection;
     }
 }
