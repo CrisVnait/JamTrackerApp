@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     //Location's
     final Location locationNord = new Location(Constants.DHBW);
     final Location locationMitte = new Location(Constants.HOME);
-    final Location locationDreieck = new Location(Constants.BHF);
     final Location locationEttlingen = new Location(Constants.HOME_ACHERN);
 
     //Location request
@@ -96,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         locationNow = location;
                         displayDensity();
-                        displayDistances(location);
                         textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
                         startAddressIntentService();
                         checkIfCorrectStreetAndDirection(locationBefore, locationNow);
@@ -137,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
         locationNord.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.DHBW).longitude);
         locationMitte.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).latitude);
         locationMitte.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).longitude);
-        locationDreieck.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.BHF).latitude);
-        locationDreieck.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.BHF).longitude);
         locationEttlingen.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).latitude);
         locationEttlingen.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).longitude);
     }
@@ -146,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
     public void displayDensity() {
         final TextView textViewNordDensity = findViewById(R.id.textViewNordDensity);
         final TextView textViewMitteDensity = findViewById(R.id.textViewMitteDensity);
-        final TextView textViewDreieckDensity = findViewById(R.id.textViewDreieckDensity);
         final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
@@ -155,39 +150,20 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         textViewSetText(textViewNordDensity, response, "eins");
                         textViewSetText(textViewMitteDensity, response, "zwei");
-                        textViewSetText(textViewDreieckDensity, response, "drei");
                         textViewSetText(textViewEttlingenDensity, response, "vier");
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        textViewNordDensity.setText("request");
-                        textViewMitteDensity.setText("error");
-                        textViewDreieckDensity.setText("request");
-                        textViewEttlingenDensity.setText("error");
+                        textViewNordDensity.setText("request error");
+                        textViewMitteDensity.setText("request error");
+                        textViewEttlingenDensity.setText("request error");
                     }
                 });
 
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(stringRequest);
-    }
-
-    private void displayDistances(Location location) {
-        final TextView textViewNordDistance = findViewById(R.id.textViewNordDistance);
-        final TextView textViewMitteDistance = findViewById(R.id.textViewMitteDistance);
-        final TextView textViewDreieckDistance = findViewById(R.id.textViewDreieckDistance);
-        final TextView textViewEttlingenDistance = findViewById(R.id.textViewEttlingenDistance);
-
-        textViewNordDistance.setText(getFormatDistance(location.distanceTo(locationNord)));
-        textViewMitteDistance.setText(getFormatDistance(location.distanceTo(locationMitte)));
-        textViewDreieckDistance.setText(getFormatDistance(location.distanceTo(locationDreieck)));
-        textViewEttlingenDistance.setText(getFormatDistance(location.distanceTo(locationEttlingen)));
-    }
-
-    private String getFormatDistance(Float distance) {
-        return String.format("%.1f", distance * 0.001);
-
     }
 
     private void textViewSetText(TextView textView, String response, String name) {
