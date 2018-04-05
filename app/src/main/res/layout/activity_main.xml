@@ -63,7 +63,7 @@
     <TextView
         android:id="@+id/textViewNordDensity"
         android:layout_width="75dp"
-        android:layout_height="30dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:text="@string/placeholder"
         android:textAlignment="textEnd"
@@ -75,7 +75,7 @@
     <TextView
         android:id="@+id/textViewEttlingenDensity"
         android:layout_width="75dp"
-        android:layout_height="32dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:text="@string/placeholder"
         android:textAlignment="textEnd"
@@ -86,7 +86,7 @@
     <TextView
         android:id="@+id/textViewMitteDensity"
         android:layout_width="75dp"
-        android:layout_height="32dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:text="@string/placeholder"
         android:textAlignment="textEnd"
