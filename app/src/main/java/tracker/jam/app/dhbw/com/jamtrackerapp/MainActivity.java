@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Maps
     private GoogleMap map;
+    private Marker marker;
 
 
     @Override
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
+                        updateMarkerPosition(location);
                         if (locationNow != null) {
                             locationBefore = locationNow;
                         } else {
@@ -317,11 +320,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        LatLng aktuell = new LatLng(49.015938, 8.466022);
-        map.addMarker(new MarkerOptions().position(aktuell));
         map.moveCamera(CameraUpdateFactory.newLatLng(Constants.MAPS_CENTRUM));
         map.setMinZoomPreference(12);
         map.setMaxZoomPreference(12);
         map.getUiSettings().setAllGesturesEnabled(false);
+    }
+
+    private void updateMarkerPosition(Location newLocation) {
+
+        LatLng newLatLng = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+
+        if(marker == null) {
+            marker = map.addMarker(new MarkerOptions().position(newLatLng));
+        }
+        else {
+            marker.remove();
+            marker = map.addMarker(new MarkerOptions().position(newLatLng));
+        }
     }
 }
