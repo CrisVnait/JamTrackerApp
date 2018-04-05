@@ -37,4 +37,8 @@ final class Constants {
         GATEWAY_LANDMARKS.put(HOME, new LatLng(49.00852, 8.39602));
         GATEWAY_LANDMARKS.put(HOME_ACHERN, new LatLng(48.6272, 8.066246));
     }
+
+    //Maps
+    public static LatLng MAPS_CENTRUM = new LatLng(48.987868, 8.417231);
+
 }

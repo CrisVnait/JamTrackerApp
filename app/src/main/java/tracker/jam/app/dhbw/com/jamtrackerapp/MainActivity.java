@@ -27,7 +27,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -37,7 +42,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     //Location's
     final Location locationNord = new Location(Constants.DHBW);
@@ -63,10 +68,17 @@ public class MainActivity extends AppCompatActivity {
     private int counterWrongStreet;
     private int counterWrongDirection;
 
+    //Maps
+    private GoogleMap map;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
 
         if (addressOutput == null) {
             addressOutput = "";
@@ -300,5 +312,16 @@ public class MainActivity extends AppCompatActivity {
 
     public static boolean isCorrectStreetAndDirection() {
         return isCorrectStreetAndDirection;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        LatLng aktuell = new LatLng(49.015938, 8.466022);
+        map.addMarker(new MarkerOptions().position(aktuell));
+        map.moveCamera(CameraUpdateFactory.newLatLng(Constants.MAPS_CENTRUM));
+        map.setMinZoomPreference(12);
+        map.setMaxZoomPreference(12);
+        map.getUiSettings().setAllGesturesEnabled(false);
     }
 }
