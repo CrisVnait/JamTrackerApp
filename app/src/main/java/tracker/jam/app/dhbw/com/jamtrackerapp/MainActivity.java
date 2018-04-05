@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final TextView textViewCoordinates = findViewById(R.id.textViewCoordinates);
-
         if (addressOutput == null) {
             addressOutput = "";
         }
@@ -95,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                         locationNow = location;
                         displayDensity();
-                        textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
+                        //textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
                         startAddressIntentService();
                         checkIfCorrectStreetAndDirection(locationBefore, locationNow);
                     } else {
-                        textViewCoordinates.setText("Location is null");
+                        //textViewCoordinates.setText("Location is null");
                     }
                 }
             }
@@ -205,8 +203,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class AddressResultReceiver extends ResultReceiver {
-        final TextView textViewAddress = findViewById(R.id.textViewAddress);
-
         public AddressResultReceiver(Handler handler) {
             super(handler);
         }
@@ -221,13 +217,11 @@ public class MainActivity extends AppCompatActivity {
             if (addressOutput == null) {
                 addressOutput = "";
             }
-            textViewAddress.setText(addressOutput);
+            //textViewAddress.setText(addressOutput);
         }
     }
 
     private void addGeofences() {
-        final TextView textViewGeofences = findViewById(R.id.textViewGeofences);
-
         geofenceList = new ArrayList<>();
         geofencePendingIntent = null;
         populateGeofenceList();
@@ -240,13 +234,13 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        textViewGeofences.setText("Geofences added");
+                        //textViewGeofences.setText("Geofences added");
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        textViewGeofences.setText("Failed to add geofences");
+                        //textViewGeofences.setText("Failed to add geofences");
                     }
                 });
     }

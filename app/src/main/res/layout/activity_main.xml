@@ -7,121 +7,98 @@
     tools:context="tracker.jam.app.dhbw.com.jamtrackerapp.MainActivity">
 
     <TextView
-        android:id="@+id/textViewCoordinates"
+        android:id="@+id/textViewSuggestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewNord"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewNord"
+        android:layout_width="250dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="184dp"
-        android:text="TextView"
+        android:layout_marginStart="16dp"
+        android:text="@string/cam_ka_nord"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.696" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewMitte"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textViewAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
-        android:layout_marginTop="64dp"
-        android:text="TextView"
+        android:id="@+id/textViewMitte"
+        android:layout_width="250dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/cam_ka_mitte"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewEttlingen"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textViewGeofences"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="108dp"
-        android:text="TextView"
+        android:id="@+id/textViewNordDensity"
+        android:layout_width="75dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/placeholder"
+        android:textAlignment="textEnd"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayoutBottom"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewNord"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayoutBottom"
-        android:layout_width="match_parent"
-        android:layout_height="175dp"
+    <TextView
+        android:id="@+id/textViewEttlingenDensity"
+        android:layout_width="75dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/placeholder"
+        android:textAlignment="textEnd"
+        android:textSize="24sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewEttlingen"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewMitteDensity"
+        android:layout_width="75dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/placeholder"
+        android:textAlignment="textEnd"
+        android:textSize="24sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewMitte"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewEttlingen"
+        android:layout_width="250dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/cam_ettlingen"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSuggestion"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/textViewNord"
-            android:layout_width="250dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/cam_ka_nord"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/textViewMitte"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewNordDensity"
-            android:layout_width="75dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/placeholder"
-            android:textAlignment="textEnd"
-            android:textSize="24sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textViewNord"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewMitte"
-            android:layout_width="250dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/cam_ka_mitte"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/textViewEttlingen"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewMitteDensity"
-            android:layout_width="75dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/placeholder"
-            android:textAlignment="textEnd"
-            android:textSize="24sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textViewMitte"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewEttlingen"
-            android:layout_width="250dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/cam_ettlingen"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/textViewEttlingenDensity"
-            android:layout_width="75dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/placeholder"
-            android:textAlignment="textEnd"
-            android:textSize="24sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textViewEttlingen"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
