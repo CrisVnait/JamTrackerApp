@@ -168,10 +168,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void textViewSetText(TextView textView, String response, String name) {
         try {
-            textView.setText(String.valueOf(new JSONObject(response).getInt(name)));
+            int density = new JSONObject(response).getInt(name);
+            textView.setText(String.valueOf(density));
+            if (isBetween(density, 0, 33)) {
+                textView.setBackgroundResource(R.color.colorGreen);
+            } else if (isBetween(density, 34, 66)) {
+                textView.setBackgroundResource(R.color.colorOrange);
+            } else if (isBetween(density, 67, 100)) {
+                textView.setBackgroundResource(R.color.colorRed);
+            } else {
+                textView.setBackgroundResource(R.color.colorBlack);
+            }
+
         } catch (JSONException e) {
             textView.setText("parse error");
         }
+    }
+
+    private boolean isBetween(int density, int lower, int upper) {
+        return lower <= density && density <= upper;
     }
 
     private void requestLocation() {
