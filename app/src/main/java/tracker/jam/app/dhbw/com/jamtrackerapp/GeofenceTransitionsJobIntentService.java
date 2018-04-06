@@ -36,7 +36,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(Intent intent) {
-        if (MainActivity.isCorrectStreetAndDirection()) {
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if (geofencingEvent.hasError()) {
                 int errorCode = geofencingEvent.getErrorCode();
@@ -64,8 +63,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             } else {
                 // Log the error.
             }
-
-        }
     }
 
     /**
