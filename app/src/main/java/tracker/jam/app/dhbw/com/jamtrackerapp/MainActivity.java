@@ -55,19 +55,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
-    //Geocoding
-    private Location locationNow;
-    private Location locationBefore;
-    private AddressResultReceiver resultReceiver;
-    private String addressOutput;
-
     //Geofencing
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
-    private static boolean isCorrectStreetAndDirection;
-    private int counterWrongStreet;
-    private int counterWrongDirection;
 
     //Maps
     private GoogleMap map;
@@ -82,17 +73,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
-        if (addressOutput == null) {
-            addressOutput = "";
-        }
-        isCorrectStreetAndDirection = false;
-        locationNow = null;
-        counterWrongStreet = 0;
-        counterWrongDirection = 0;
         setLocationLatLng();
         addGeofences();
         requestLocation();
-        resultReceiver = new AddressResultReceiver(new Handler());
 
         locationCallback = new LocationCallback() {
             @Override
@@ -101,16 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
                         updateMarkerPosition(location);
-                        if (locationNow != null) {
-                            locationBefore = locationNow;
-                        } else {
-                            locationBefore = location;
-                        }
-                        locationNow = location;
                         displayDensity();
-                        //textViewCoordinates.setText(location.getLatitude() + " ; " + location.getLongitude());
-                        startAddressIntentService();
-                        checkIfCorrectStreetAndDirection(locationBefore, locationNow);
                     } else {
                         //textViewCoordinates.setText("Location is null");
                     }
@@ -210,32 +184,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    protected void startAddressIntentService() {
-        Intent intent = new Intent(this, FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, resultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, locationNow);
-        startService(intent);
-    }
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            if (resultData == null) {
-                return;
-            }
-
-            addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            if (addressOutput == null) {
-                addressOutput = "";
-            }
-            //textViewAddress.setText(addressOutput);
-        }
-    }
-
     private void addGeofences() {
         geofenceList = new ArrayList<>();
         geofencePendingIntent = null;
@@ -290,31 +238,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
-    }
-
-    private void checkIfCorrectStreetAndDirection(Location before, Location now) {
-        float distanceDifference = before.distanceTo(locationEttlingen) - now.distanceTo(locationEttlingen);
-        if (addressOutput.contains(Constants.CORRECT_STREET)) {
-            if (distanceDifference >= -20) {
-                isCorrectStreetAndDirection = true;
-                counterWrongStreet = 0;
-                counterWrongDirection = 0;
-            } else {
-                counterWrongDirection++;
-                if (counterWrongDirection > 3) {
-                    isCorrectStreetAndDirection = false;
-                }
-            }
-        } else {
-            counterWrongStreet++;
-            if (counterWrongStreet > 3) {
-                isCorrectStreetAndDirection = false;
-            }
-        }
-    }
-
-    public static boolean isCorrectStreetAndDirection() {
-        return isCorrectStreetAndDirection;
     }
 
     @Override
