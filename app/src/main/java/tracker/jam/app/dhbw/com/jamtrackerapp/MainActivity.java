@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -253,10 +251,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         LatLng newLatLng = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
 
-        if(marker == null) {
+        if (marker == null) {
             marker = map.addMarker(new MarkerOptions().position(newLatLng));
-        }
-        else {
+        } else {
             marker.remove();
             marker = map.addMarker(new MarkerOptions().position(newLatLng));
         }
