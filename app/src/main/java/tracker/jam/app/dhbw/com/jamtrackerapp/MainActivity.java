@@ -41,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -58,8 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Maps
     private GoogleMap map;
     private Marker marker;
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,12 +192,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void populateGeofenceList() {
-        for (Map.Entry<String, LatLng> entry : Constants.GATEWAY_LANDMARKS.entrySet()) {
+        for (MyGeofence geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
             geofenceList.add(new Geofence.Builder()
-                    .setRequestId(entry.getKey())
+                    .setRequestId(geofence.getName())
                     .setCircularRegion(
-                            entry.getValue().latitude,
-                            entry.getValue().longitude,
+                            geofence.getLatLng().latitude,
+                            geofence.getLatLng().longitude,
                             Constants.GEOFENCE_RADIUS_IN_METERS
                     )
                     .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
@@ -235,13 +233,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void addCirclesToMap(GoogleMap map) {
-        for (Map.Entry<String, LatLng> entry : Constants.GATEWAY_LANDMARKS.entrySet()) {
-            map.addCircle(new CircleOptions()
-                    .center(new LatLng(entry.getValue().latitude, entry.getValue().longitude))
-                    .radius(250)
-                    .fillColor(Color.parseColor("#7F202fb1"))
-                    .strokeColor(Color.BLACK)
-                    .strokeWidth(3));
+        for (MyGeofence geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
+            if (geofence.isDrawCircleInMap()) {
+                map.addCircle(new CircleOptions()
+                        .center(geofence.getLatLng())
+                        .radius(250)
+                        .fillColor(Color.parseColor("#7F202fb1"))
+                        .strokeColor(Color.BLACK)
+                        .strokeWidth(3));
+            }
         }
     }
 
