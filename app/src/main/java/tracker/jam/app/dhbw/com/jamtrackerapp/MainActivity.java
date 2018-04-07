@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,11 +44,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    //Location's
-    final Location locationNord = new Location(Constants.DHBW);
-    final Location locationMitte = new Location(Constants.HOME);
-    final Location locationEttlingen = new Location(Constants.HOME_ACHERN);
 
     //Location request
     private FusedLocationProviderClient locationClient;
@@ -71,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
-        setLocationLatLng();
         addGeofences();
         requestLocation();
 
@@ -113,15 +109,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void stopLocationUpdates() {
         locationClient.removeLocationUpdates(locationCallback);
-    }
-
-    private void setLocationLatLng() {
-        locationNord.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.DHBW).latitude);
-        locationNord.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.DHBW).longitude);
-        locationMitte.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).latitude);
-        locationMitte.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME).longitude);
-        locationEttlingen.setLatitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).latitude);
-        locationEttlingen.setLongitude(Constants.GATEWAY_LANDMARKS.get(Constants.HOME_ACHERN).longitude);
     }
 
     public void displayDensity() {
@@ -242,9 +229,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLng(Constants.MAPS_CENTRUM));
-        map.setMinZoomPreference(12);
-        map.setMaxZoomPreference(12);
+        map.setMinZoomPreference(12.1F);
+        map.setMaxZoomPreference(12.1F);
         map.getUiSettings().setAllGesturesEnabled(false);
+        addCirclesToMap(map);
+    }
+
+    private void addCirclesToMap(GoogleMap map) {
+        for (Map.Entry<String, LatLng> entry : Constants.GATEWAY_LANDMARKS.entrySet()) {
+            map.addCircle(new CircleOptions()
+                    .center(new LatLng(entry.getValue().latitude, entry.getValue().longitude))
+                    .radius(250)
+                    .fillColor(Color.parseColor("#7F202fb1"))
+                    .strokeColor(Color.BLACK)
+                    .strokeWidth(3));
+        }
     }
 
     private void updateMarkerPosition(Location newLocation) {
