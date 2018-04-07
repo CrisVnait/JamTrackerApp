@@ -38,8 +38,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(Intent intent) {
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if (geofencingEvent.hasError()) {
-                int errorCode = geofencingEvent.getErrorCode();
-                sendNotification(String.valueOf(errorCode));
+                sendNotification(String.valueOf("Fehler"));
                 return;
             }
 
@@ -47,8 +46,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
             // Test that the reported transition was of interest.
-            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                    geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
                 // Get the geofences that were triggered. A single event can trigger
                 // multiple geofences.
@@ -96,8 +94,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         switch (transitionType) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
                 return getString(R.string.geofence_transition_entered);
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return getString(R.string.geofence_transition_exited);
             default:
                 return getString(R.string.unknown_geofence_transition);
         }
