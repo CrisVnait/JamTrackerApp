@@ -33,27 +33,21 @@ final class Constants {
     }
 
     static {
-        populateNonChangeableGeofenceList();
+        addElementsToList(NON_CHANGEABLE_GEOFENCE_LIST);
         populateChangeableGeofenceList();
     }
 
-    public static void populateNonChangeableGeofenceList() {
-        NON_CHANGEABLE_GEOFENCE_LIST.clear();
-        NON_CHANGEABLE_GEOFENCE_LIST.add(ENTRANCE);
-        NON_CHANGEABLE_GEOFENCE_LIST.add(KA_NORD);
-        NON_CHANGEABLE_GEOFENCE_LIST.add(KA_DURLACH);
-        NON_CHANGEABLE_GEOFENCE_LIST.add(KA_MITTE);
-        NON_CHANGEABLE_GEOFENCE_LIST.add(KA_DREIECK);
-        NON_CHANGEABLE_GEOFENCE_LIST.add(ETTLINGEN);
+    public static void populateChangeableGeofenceList() {
+        addElementsToList(CHANGEABLE_GEOFENCE_LIST);
     }
 
-    public static void populateChangeableGeofenceList() {
-        CHANGEABLE_GEOFENCE_LIST.clear();
-        CHANGEABLE_GEOFENCE_LIST.add(ENTRANCE);
-        CHANGEABLE_GEOFENCE_LIST.add(KA_NORD);
-        CHANGEABLE_GEOFENCE_LIST.add(KA_DURLACH);
-        CHANGEABLE_GEOFENCE_LIST.add(KA_MITTE);
-        CHANGEABLE_GEOFENCE_LIST.add(KA_DREIECK);
-        CHANGEABLE_GEOFENCE_LIST.add(ETTLINGEN);
+    private static void addElementsToList(List list) {
+        list.clear();
+        list.add(ENTRANCE);
+        list.add(KA_NORD);
+        list.add(KA_DURLACH);
+        list.add(KA_MITTE);
+        list.add(KA_DREIECK);
+        list.add(ETTLINGEN);
     }
 }
