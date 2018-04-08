@@ -38,7 +38,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(Intent intent) {
             GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
             if (geofencingEvent.hasError()) {
-                sendNotification(String.valueOf("Fehler"));
+                sendNotification(String.valueOf("Fehler Geofencing Event"));
                 return;
             }
 

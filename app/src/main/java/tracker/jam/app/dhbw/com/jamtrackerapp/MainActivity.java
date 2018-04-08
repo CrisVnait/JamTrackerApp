@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Maps
     private GoogleMap map;
     private Marker marker;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
