@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,39 +17,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    //Location request
-    private FusedLocationProviderClient locationClient;
-    private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
 
     //Geofencing
     private ArrayList<Geofence> geofenceList;
@@ -60,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Maps
     private GoogleMap map;
-    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,54 +57,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         addGeofences();
-        requestLocation();
 
         final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
 
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-
-                for (Location location : locationResult.getLocations()) {
-                    if (location != null) {
-                        updateMarkerPosition(location);
-                        displayDensity();
-                        calculateSuggestion();
-                        if (exitSuggestion != null) {
-                            textViewSuggestion.setText(exitSuggestion.getName());
-                        } else {
-                            textViewSuggestion.setText("Empfehlung nicht vorhanden");
-                        }
-                    } else {
-                        //textViewCoordinates.setText("Location is null");
-                    }
-                }
-            }
-        };
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startLocationUpdates();
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
+        displayDensity();
+        calculateSuggestion();
+        if (exitSuggestion != null) {
+            textViewSuggestion.setText(exitSuggestion.getName());
+        } else {
+            textViewSuggestion.setText("Empfehlung nicht vorhanden");
         }
-        locationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    private void stopLocationUpdates() {
-        locationClient.removeLocationUpdates(locationCallback);
     }
 
     public void displayDensity() {
@@ -173,14 +122,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean isBetween(int density, int lower, int upper) {
         return lower <= density && density <= upper;
-    }
-
-    private void requestLocation() {
-        locationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(500);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void addGeofences() {
@@ -245,6 +186,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setMinZoomPreference(12.1F);
         map.setMaxZoomPreference(12.1F);
         map.getUiSettings().setAllGesturesEnabled(false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
+        }
+        map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
         addCirclesToMap(map);
     }
 
@@ -258,18 +204,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .strokeColor(Color.BLACK)
                         .strokeWidth(3));
             }
-        }
-    }
-
-    private void updateMarkerPosition(Location newLocation) {
-
-        LatLng newLatLng = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-
-        if (marker == null) {
-            marker = map.addMarker(new MarkerOptions().position(newLatLng));
-        } else {
-            marker.remove();
-            marker = map.addMarker(new MarkerOptions().position(newLatLng));
         }
     }
 
