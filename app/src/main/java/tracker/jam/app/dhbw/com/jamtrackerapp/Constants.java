@@ -10,12 +10,12 @@ final class Constants {
 
     public static List<MyGeofence> NON_CHANGEABLE_GEOFENCE_LIST = new LinkedList<>();
 
-    public static MyGeofence ENTRANCE = new MyGeofence("Entrance", new LatLng(49.118115, 8.551332), false, false, false);
-    public static MyGeofence KA_NORD = new MyGeofence("KA Nord", new LatLng(49.019773, 8.470468), true, true, true);
-    public static MyGeofence KA_DURLACH = new MyGeofence(" KA Durlach", new LatLng(49.005600, 8.454503), true, true, false);
-    public static MyGeofence KA_MITTE = new MyGeofence("KA Mitte", new LatLng(48.993609, 8.437117), true, true, true);
-    public static MyGeofence KA_DREIECK = new MyGeofence("Dreieck KA", new LatLng(48.979249, 8.436886), true, true, false);
-    public static MyGeofence ETTLINGEN = new MyGeofence("Ettlingen", new LatLng(48.961417, 8.409667), true, true, true);
+    public static MyGeofence ENTRANCE = new MyGeofence("Entrance", new LatLng(49.118115, 8.551332), false, false, false, false, JamLevel.NOCAM);
+    public static MyGeofence KA_NORD = new MyGeofence("KA Nord", new LatLng(49.019773, 8.470468), true, true, true, true, JamLevel.UNDEFINED);
+    public static MyGeofence KA_DURLACH = new MyGeofence(" KA Durlach", new LatLng(49.005600, 8.454503), true, true, true, false, JamLevel.NOCAM);
+    public static MyGeofence KA_MITTE = new MyGeofence("KA Mitte", new LatLng(48.993609, 8.437117), true, true, true, true, JamLevel.UNDEFINED);
+    public static MyGeofence KA_DREIECK = new MyGeofence("Dreieck KA", new LatLng(48.979249, 8.436886), true, true, true, false, JamLevel.NOCAM);
+    public static MyGeofence ETTLINGEN = new MyGeofence("Ettlingen", new LatLng(48.961417, 8.409667), true, true, true, true, JamLevel.UNDEFINED);
 
     //Density
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";

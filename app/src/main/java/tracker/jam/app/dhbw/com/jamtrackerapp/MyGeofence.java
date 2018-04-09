@@ -5,16 +5,20 @@ import com.google.android.gms.maps.model.LatLng;
 public class MyGeofence {
     private String name;
     private LatLng latLng;
+    private boolean isExit;
     private boolean sendSuggestion;
     private boolean drawCircleInMap;
     private boolean camAvailable;
+    private JamLevel jamLevel;
 
-    public MyGeofence(String name, LatLng latLng, boolean sendSuggestion, boolean drawCircleInMap, boolean camAvailable) {
+    public MyGeofence(String name, LatLng latLng, boolean isExit, boolean sendSuggestion, boolean drawCircleInMap, boolean camAvailable, JamLevel jamLevel) {
         this.name = name;
         this.latLng = latLng;
+        this.isExit = isExit;
         this.sendSuggestion = sendSuggestion;
         this.drawCircleInMap = drawCircleInMap;
         this.camAvailable = camAvailable;
+        this.jamLevel = jamLevel;
     }
 
     public String getName() {
@@ -31,6 +35,14 @@ public class MyGeofence {
 
     public void setLatLng(LatLng latLng) {
         this.latLng = latLng;
+    }
+
+    public boolean isExit() {
+        return isExit;
+    }
+
+    public void setExit(boolean exit) {
+        isExit = exit;
     }
 
     public boolean isSendSuggestion() {
@@ -55,5 +67,13 @@ public class MyGeofence {
 
     public void setCamAvailable(boolean camAvailable) {
         this.camAvailable = camAvailable;
+    }
+
+    public JamLevel getJamLevel() {
+        return jamLevel;
+    }
+
+    public void setJamLevel(JamLevel jamLevel) {
+        this.jamLevel = jamLevel;
     }
 }
