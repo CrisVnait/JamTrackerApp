@@ -39,8 +39,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
+    public static MyGeofence exitSuggestion;
 
     //Maps
     private GoogleMap map;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         addGeofences();
         requestLocation();
 
+        final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -77,6 +83,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (location != null) {
                         updateMarkerPosition(location);
                         displayDensity();
+                        calculateSuggestion();
+                        if (exitSuggestion != null) {
+                            textViewSuggestion.setText(exitSuggestion.getName());
+                        } else {
+                            textViewSuggestion.setText("Empfehlung nicht vorhanden");
+                        }
                     } else {
                         //textViewCoordinates.setText("Location is null");
                     }
@@ -118,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        textViewSetText(textViewNordDensity, response, "eins");
-                        textViewSetText(textViewMitteDensity, response, "zwei");
-                        textViewSetText(textViewEttlingenDensity, response, "vier");
+                        textViewSetText(textViewNordDensity, Constants.KA_NORD, response, "eins");
+                        textViewSetText(textViewMitteDensity, Constants.KA_MITTE, response, "zwei");
+                        textViewSetText(textViewEttlingenDensity, Constants.ETTLINGEN, response, "vier");
                     }
                 },
                 new Response.ErrorListener() {
@@ -136,17 +148,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         queue.add(stringRequest);
     }
 
-    private void textViewSetText(TextView textView, String response, String name) {
+    private void textViewSetText(TextView textView, MyGeofence myGeofence, String response, String name) {
         try {
             int density = new JSONObject(response).getInt(name);
             textView.setText(String.valueOf(density));
             if (isBetween(density, 0, 33)) {
+                myGeofence.setJamLevel(JamLevel.GREEN);
                 textView.setBackgroundResource(R.color.colorGreen);
             } else if (isBetween(density, 34, 66)) {
+                myGeofence.setJamLevel(JamLevel.YELLOW);
                 textView.setBackgroundResource(R.color.colorOrange);
             } else if (isBetween(density, 67, 100)) {
+                myGeofence.setJamLevel(JamLevel.RED);
                 textView.setBackgroundResource(R.color.colorRed);
             } else {
+                myGeofence.setJamLevel(JamLevel.UNDEFINED);
                 textView.setBackgroundResource(R.color.colorBlack);
             }
 
@@ -255,5 +271,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             marker.remove();
             marker = map.addMarker(new MarkerOptions().position(newLatLng));
         }
+    }
+
+    public void calculateSuggestion() {
+        List<MyGeofence> myGeofenceList = Constants.CHANGEABLE_GEOFENCE_LIST;
+        Iterator<MyGeofence> myGeofenceIterator = myGeofenceList.iterator();
+        MyGeofence myGeofenceActual = null;
+        MyGeofence myGeofenceNext = null;
+        if (myGeofenceIterator.hasNext()) {
+            myGeofenceActual = myGeofenceIterator.next();
+            while (myGeofenceIterator.hasNext()) {
+                myGeofenceNext = myGeofenceIterator.next();
+                if (myGeofenceActual.isExit()) {
+                    if (myGeofenceActual.isCamAvailable()) {
+                        if (myGeofenceNext.getJamLevel() == JamLevel.RED ||
+                                (myGeofenceActual.getJamLevel() == JamLevel.YELLOW &&
+                                        myGeofenceNext.getJamLevel() == JamLevel.YELLOW)) {
+                            exitSuggestion = myGeofenceActual;
+                            return;
+                        }
+                    } else {
+                        if (myGeofenceNext.getJamLevel() == JamLevel.RED) {
+                            exitSuggestion = myGeofenceActual;
+                            return;
+                        }
+                    }
+                }
+                myGeofenceActual = myGeofenceNext;
+            }
+        }
+        exitSuggestion = myGeofenceActual;
     }
 }

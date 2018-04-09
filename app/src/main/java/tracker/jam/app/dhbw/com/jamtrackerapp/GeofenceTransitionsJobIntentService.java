@@ -36,31 +36,38 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(Intent intent) {
-            GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-            if (geofencingEvent.hasError()) {
-                sendNotification(String.valueOf("Fehler Geofencing Event"));
-                return;
+        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        if (geofencingEvent.hasError()) {
+            sendNotification(String.valueOf("Fehler Geofencing Event"));
+            return;
+        }
+
+        // Get the transition type.
+        int geofenceTransition = geofencingEvent.getGeofenceTransition();
+
+        // Test that the reported transition was of interest.
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER &&
+                Constants.CHANGEABLE_GEOFENCE_LIST.get(0) != null) {
+
+            // Get the geofences that were triggered. A single event can trigger
+            // multiple geofences.
+            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+            MyGeofence myGeofence = Constants.CHANGEABLE_GEOFENCE_LIST.get(0);
+
+            for (Geofence geofence : triggeringGeofences) {
+                if (geofence.getRequestId().equals(myGeofence.getName())) {
+                    if (myGeofence.isSendSuggestion()) {
+                        // Get the transition details as a String.
+                        String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
+                        // Send notification and log the transition details.
+                        sendNotification(geofenceTransitionDetails);
+                        speak(geofenceTransitionDetails);
+                    }
+                    Constants.CHANGEABLE_GEOFENCE_LIST.remove(0);
+                }
             }
-
-            // Get the transition type.
-            int geofenceTransition = geofencingEvent.getGeofenceTransition();
-
-            // Test that the reported transition was of interest.
-            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-
-                // Get the geofences that were triggered. A single event can trigger
-                // multiple geofences.
-                List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-
-                // Get the transition details as a String.
-                String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
-
-                // Send notification and log the transition details.
-                sendNotification(geofenceTransitionDetails);
-                speak();
-            } else {
-                // Log the error.
-            }
+        }
     }
 
     /**
@@ -161,14 +168,14 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         mNotificationManager.notify(0, builder.build());
     }
 
-    private void speak() {
+    private void speak(final String toSay) {
 
         textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     textToSpeech.setLanguage(Locale.GERMAN);
-                    textToSpeech.speak("Test", TextToSpeech.QUEUE_FLUSH, null);
+                    textToSpeech.speak(toSay, TextToSpeech.QUEUE_FLUSH, null);
                 }
             }
         });
