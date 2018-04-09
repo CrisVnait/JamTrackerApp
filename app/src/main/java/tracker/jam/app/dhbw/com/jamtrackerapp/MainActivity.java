@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -24,9 +25,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
+        moveMapCamera(mapFragment);
 
         addGeofences();
 
@@ -182,9 +186,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.moveCamera(CameraUpdateFactory.newLatLng(Constants.MAPS_CENTRUM));
-        map.setMinZoomPreference(12.1F);
-        map.setMaxZoomPreference(12.1F);
         map.getUiSettings().setAllGesturesEnabled(false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
@@ -192,6 +193,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
         addCirclesToMap(map);
+    }
+
+    private void moveMapCamera(SupportMapFragment supportMapFragment) {
+        final View mapView = supportMapFragment.getView();
+        mapView.post(new Runnable() {
+            @Override
+            public void run() {
+                int width = mapView.getMeasuredWidth();
+                int height = mapView.getMeasuredHeight();
+                int padding = (int) (width * 0.075); // offset from edges of the map 7,5% of screen
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(Constants.mapsLatLngBounds, width, height, padding));
+            }
+        });
     }
 
     private void addCirclesToMap(GoogleMap map) {

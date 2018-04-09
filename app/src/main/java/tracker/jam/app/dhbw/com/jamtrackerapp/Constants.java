@@ -2,6 +2,7 @@ package tracker.jam.app.dhbw.com.jamtrackerapp;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ final class Constants {
     static final List<MyGeofence> CHANGEABLE_GEOFENCE_LIST = new LinkedList<>();
 
     //Maps
-    public static LatLng MAPS_CENTRUM = new LatLng(48.991579, 8.436256);
+    public static LatLngBounds mapsLatLngBounds = new LatLngBounds(Constants.ETTLINGEN.getLatLng(), Constants.KA_NORD.getLatLng());
 
 
     private Constants() {
