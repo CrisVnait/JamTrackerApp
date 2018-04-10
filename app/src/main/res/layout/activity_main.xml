@@ -44,7 +44,6 @@
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:text="@string/cam_ka_nord"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/textViewMitte"
         app:layout_constraintStart_toStartOf="parent" />
@@ -67,7 +66,6 @@
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:text="@string/cam_ka_mitte"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/textViewEttlingen"
         app:layout_constraintStart_toStartOf="parent" />
@@ -100,7 +98,6 @@
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="16dp"
-        android:text="@string/cam_ettlingen"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

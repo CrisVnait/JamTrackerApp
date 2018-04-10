@@ -16,10 +16,12 @@ import android.text.TextUtils;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
@@ -47,24 +49,28 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
         // Test that the reported transition was of interest.
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER &&
-                Constants.CHANGEABLE_GEOFENCE_LIST.get(0) != null) {
+                Constants.EDITABLE_CHECKPOINT_LIST.get(0) != null) {
 
             // Get the geofences that were triggered. A single event can trigger
             // multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
-            Gateway myGeofence = Constants.CHANGEABLE_GEOFENCE_LIST.get(0);
+            Checkpoint checkpoint = Constants.EDITABLE_CHECKPOINT_LIST.get(0);
 
             for (Geofence geofence : triggeringGeofences) {
-                if (geofence.getRequestId().equals(myGeofence.getName())) {
-                    if (myGeofence.isSendSuggestion()) {
-                        // Get the transition details as a String.
-                        String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
-                        // Send notification and log the transition details.
-                        sendNotification(geofenceTransitionDetails);
-                        speak(geofenceTransitionDetails);
+                if (geofence.getRequestId().equals(checkpoint.getName())) {
+                    // Get the transition details as a String.
+                    String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
+                    // Send notification and log the transition details.
+                    sendNotification(geofenceTransitionDetails);
+                    speak(geofenceTransitionDetails);
+                    Constants.EDITABLE_CHECKPOINT_LIST.remove(0);
+                } else {
+                    for (String key : Constants.GEOFENCE_MAP.keySet()) {
+                        if (geofence.getRequestId().equals(key)) {
+                            Constants.populateEditableCheckpointList();
+                        }
                     }
-                    Constants.CHANGEABLE_GEOFENCE_LIST.remove(0);
                 }
             }
         }

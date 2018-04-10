@@ -4,45 +4,55 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 final class Constants {
 
-    public static List<Gateway> NON_CHANGEABLE_GEOFENCE_LIST = new LinkedList<>();
+    //Geofencing
+    public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = Geofence.NEVER_EXPIRE;
+    public static final float GEOFENCE_RADIUS_750_METERS = 750;
+    public static final float GEOFENCE_RADIUS_200_METERS = 200;
 
-    public static Gateway ENTRANCE = new Gateway("Entrance", new LatLng(49.118115, 8.551332), false, false, false, false, JamLevel.NOCAM);
-    public static Gateway KA_NORD = new Gateway("KA Nord", new LatLng(49.019773, 8.470468), true, true, true, true, JamLevel.UNDEFINED);
-    public static Gateway KA_DURLACH = new Gateway(" KA Durlach", new LatLng(49.005600, 8.454503), true, true, true, false, JamLevel.NOCAM);
-    public static Gateway KA_MITTE = new Gateway("KA Mitte", new LatLng(48.993609, 8.437117), true, true, true, true, JamLevel.UNDEFINED);
-    public static Gateway KA_DREIECK = new Gateway("Dreieck KA", new LatLng(48.979249, 8.436886), true, true, true, false, JamLevel.NOCAM);
-    public static Gateway ETTLINGEN = new Gateway("Ettlingen", new LatLng(48.961417, 8.409667), true, true, true, true, JamLevel.UNDEFINED);
+    //Checkpoints
+    public static Checkpoint ENTRANCE = new Checkpoint("CP Startpunkt", new LatLng(49.118115, 8.551332), GEOFENCE_RADIUS_200_METERS, false, JamLevel.NOCAM);
+    public static Checkpoint KA_NORD = new Checkpoint("Karlsruhe Nord", new LatLng(49.019773, 8.470468), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
+    public static Checkpoint KA_DURLACH = new Checkpoint(" Karlsruhe Durlach", new LatLng(49.005600, 8.454503), GEOFENCE_RADIUS_750_METERS, true, JamLevel.NOCAM);
+    public static Checkpoint KA_MITTE = new Checkpoint("Karlsruhe Mitte", new LatLng(48.993609, 8.437117), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
+    public static Checkpoint KA_DREIECK = new Checkpoint("Dreieck Karlsruhe", new LatLng(48.979249, 8.436886), GEOFENCE_RADIUS_750_METERS, true, JamLevel.NOCAM);
+    public static Checkpoint ETTLINGEN = new Checkpoint("Ettlingen", new LatLng(48.961417, 8.409667), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
 
     //Density
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
 
-    //Geofencing
-    static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = Geofence.NEVER_EXPIRE;
-    static final float GEOFENCE_RADIUS_IN_METERS = 1000;
-    static final List<Gateway> CHANGEABLE_GEOFENCE_LIST = new LinkedList<>();
-
     //Maps
-    public static LatLngBounds mapsLatLngBounds = new LatLngBounds(Constants.ETTLINGEN.getLatLng(), Constants.KA_NORD.getLatLng());
+    public static LatLngBounds MAPS_LATLNG_BOUNDS = new LatLngBounds(Constants.ETTLINGEN.getLatLng(), Constants.KA_NORD.getLatLng());
 
+    //Lists
+    public static List<Checkpoint> EDITABLE_CHECKPOINT_LIST = new LinkedList<>();
+    public static List<Checkpoint> UNCHANGEABLE_CHECKPOINT_LIST = new LinkedList<>();
+    public static HashMap<String, LatLng> GEOFENCE_MAP = new HashMap<>();
 
     private Constants() {
     }
 
     static {
-        addElementsToList(NON_CHANGEABLE_GEOFENCE_LIST);
-        populateChangeableGeofenceList();
+        populateEditableCheckpointList();
+        populateUnchangeableCheckpointList();
+        populateGeofenceMap();
     }
 
-    public static void populateChangeableGeofenceList() {
-        addElementsToList(CHANGEABLE_GEOFENCE_LIST);
+    public static void populateEditableCheckpointList() {
+        addCheckpointItemsToList(EDITABLE_CHECKPOINT_LIST);
     }
 
-    private static void addElementsToList(List list) {
+    private static void populateUnchangeableCheckpointList() {
+        addCheckpointItemsToList(UNCHANGEABLE_CHECKPOINT_LIST);
+    }
+
+    private static void addCheckpointItemsToList(List list) {
         list.clear();
         list.add(ENTRANCE);
         list.add(KA_NORD);
@@ -50,5 +60,16 @@ final class Constants {
         list.add(KA_MITTE);
         list.add(KA_DREIECK);
         list.add(ETTLINGEN);
+    }
+
+    private static void populateGeofenceMap() {
+        GEOFENCE_MAP.clear();
+        GEOFENCE_MAP.put("Geo Nord-West", new LatLng(49.019773, 8.470468));
+        GEOFENCE_MAP.put("Geo Nord-Ost", new LatLng(49.014437, 8.470862));
+        GEOFENCE_MAP.put("Geo Durlach-West", new LatLng(49.003622, 8.446075));
+        GEOFENCE_MAP.put("Geo Durlach-Ost", new LatLng(49.005600, 8.454503));
+        GEOFENCE_MAP.put("Geo Mitte", new LatLng(48.993609, 8.437117));
+        GEOFENCE_MAP.put("Geo Dreieck", new LatLng(48.972017, 8.440769));
+        GEOFENCE_MAP.put("Geo Ettlingen", new LatLng(48.961821, 8.405975));
     }
 }

@@ -27,9 +27,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
-    public static Gateway exitSuggestion;
+    public static Checkpoint exitSuggestion;
 
     //Maps
     private GoogleMap map;
@@ -54,15 +55,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        assignTextViews();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         moveMapCamera(mapFragment);
 
         addGeofences();
+        requestJamLevels();
 
         final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
-
-        displayDensity();
         calculateSuggestion();
         if (exitSuggestion != null) {
             textViewSuggestion.setText(exitSuggestion.getName());
@@ -72,58 +74,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    public void displayDensity() {
-        final TextView textViewNordDensity = findViewById(R.id.textViewNordDensity);
-        final TextView textViewMitteDensity = findViewById(R.id.textViewMitteDensity);
-        final TextView textViewEttlingenDensity = findViewById(R.id.textViewEttlingenDensity);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        textViewSetText(textViewNordDensity, Constants.KA_NORD, response, "eins");
-                        textViewSetText(textViewMitteDensity, Constants.KA_MITTE, response, "zwei");
-                        textViewSetText(textViewEttlingenDensity, Constants.ETTLINGEN, response, "vier");
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        textViewNordDensity.setText("request error");
-                        textViewMitteDensity.setText("request error");
-                        textViewEttlingenDensity.setText("request error");
-                    }
-                });
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
-    }
-
-    private void textViewSetText(TextView textView, Gateway myGeofence, String response, String name) {
-        try {
-            int density = new JSONObject(response).getInt(name);
-            textView.setText(String.valueOf(density));
-            if (isBetween(density, 0, 33)) {
-                myGeofence.setJamLevel(JamLevel.GREEN);
-                textView.setBackgroundResource(R.color.colorGreen);
-            } else if (isBetween(density, 34, 66)) {
-                myGeofence.setJamLevel(JamLevel.YELLOW);
-                textView.setBackgroundResource(R.color.colorOrange);
-            } else if (isBetween(density, 67, 100)) {
-                myGeofence.setJamLevel(JamLevel.RED);
-                textView.setBackgroundResource(R.color.colorRed);
-            } else {
-                myGeofence.setJamLevel(JamLevel.UNDEFINED);
-                textView.setBackgroundResource(R.color.colorBlack);
-            }
-
-        } catch (JSONException e) {
-            textView.setText("parse error");
-        }
-    }
-
-    private boolean isBetween(int density, int lower, int upper) {
-        return lower <= density && density <= upper;
+    private void assignTextViews() {
+        Constants.KA_NORD.setTextViewName((TextView) findViewById(R.id.textViewNord));
+        Constants.KA_NORD.setTextViewJamLevel((TextView) findViewById(R.id.textViewNordDensity));
+        Constants.KA_MITTE.setTextViewName((TextView) findViewById(R.id.textViewMitte));
+        Constants.KA_MITTE.setTextViewJamLevel((TextView) findViewById(R.id.textViewMitteDensity));
+        Constants.ETTLINGEN.setTextViewName((TextView) findViewById(R.id.textViewEttlingen));
+        Constants.ETTLINGEN.setTextViewJamLevel((TextView) findViewById(R.id.textViewEttlingenDensity));
     }
 
     private void addGeofences() {
@@ -136,28 +93,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
         }
         geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //textViewGeofences.setText("Geofences added");
-                    }
-                })
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //textViewGeofences.setText("Failed to add geofences");
                     }
                 });
     }
 
     private void populateGeofenceList() {
-        for (Gateway geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
+        for (Map.Entry<String, LatLng> geofence : Constants.GEOFENCE_MAP.entrySet()) {
             geofenceList.add(new Geofence.Builder()
-                    .setRequestId(geofence.getName())
+                    .setRequestId(geofence.getKey())
                     .setCircularRegion(
-                            geofence.getLatLng().latitude,
-                            geofence.getLatLng().longitude,
-                            Constants.GEOFENCE_RADIUS_IN_METERS
+                            geofence.getValue().latitude,
+                            geofence.getValue().longitude,
+                            Constants.GEOFENCE_RADIUS_200_METERS
+                    )
+                    .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                    .build());
+        }
+
+        for (Checkpoint checkpoint : Constants.UNCHANGEABLE_CHECKPOINT_LIST) {
+            geofenceList.add(new Geofence.Builder()
+                    .setRequestId(checkpoint.getName())
+                    .setCircularRegion(
+                            checkpoint.getLatLng().latitude,
+                            checkpoint.getLatLng().longitude,
+                            checkpoint.getGeofenceRadius()
                     )
                     .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
@@ -181,6 +144,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return geofencePendingIntent;
     }
 
+    public void requestJamLevels() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        setJamLevel(Constants.KA_NORD, response, "eins");
+                        setJamLevel(Constants.KA_MITTE, response, "zwei");
+                        setJamLevel(Constants.ETTLINGEN, response, "vier");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(stringRequest);
+    }
+
+    private void setJamLevel(Checkpoint checkpoint, String response, String name) {
+        try {
+            int density = new JSONObject(response).getInt(name);
+            if (isBetween(density, 0, 33)) {
+                checkpoint.setJamLevel(JamLevel.GREEN);
+                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorGreen);
+            } else if (isBetween(density, 34, 66)) {
+                checkpoint.setJamLevel(JamLevel.YELLOW);
+                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorOrange);
+            } else if (isBetween(density, 67, 100)) {
+                checkpoint.setJamLevel(JamLevel.RED);
+                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorRed);
+            } else {
+                checkpoint.setJamLevel(JamLevel.UNDEFINED);
+                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorBlack);
+            }
+        } catch (JSONException e) {
+            //parse error
+        }
+    }
+
+    private boolean isBetween(int density, int lower, int upper) {
+        return lower <= density && density <= upper;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -202,16 +210,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 int width = mapView.getMeasuredWidth();
                 int height = mapView.getMeasuredHeight();
                 int padding = (int) (width * 0.075); // offset from edges of the map 7,5% of screen
-                map.moveCamera(CameraUpdateFactory.newLatLngBounds(Constants.mapsLatLngBounds, width, height, padding));
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(Constants.MAPS_LATLNG_BOUNDS, width, height, padding));
             }
         });
     }
 
     private void addCirclesToMap(GoogleMap map) {
-        for (Gateway geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
-            if (geofence.isDrawCircleInMap()) {
+        for (Checkpoint checkpoint : Constants.UNCHANGEABLE_CHECKPOINT_LIST) {
+            if (checkpoint.isDrawCircleInMap()) {
                 map.addCircle(new CircleOptions()
-                        .center(geofence.getLatLng())
+                        .center(checkpoint.getLatLng())
                         .radius(250)
                         .fillColor(Color.parseColor("#7F202fb1"))
                         .strokeColor(Color.BLACK)
@@ -221,27 +229,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void calculateSuggestion() {
-        List<Gateway> myGeofenceList = Constants.CHANGEABLE_GEOFENCE_LIST;
-        Iterator<Gateway> myGeofenceIterator = myGeofenceList.iterator();
-        Gateway myGeofenceActual = null;
-        Gateway myGeofenceNext = null;
+        Iterator<Checkpoint> myGeofenceIterator = Constants.EDITABLE_CHECKPOINT_LIST.iterator();
+        Checkpoint myGeofenceActual = null;
+        Checkpoint myGeofenceNext = null;
         if (myGeofenceIterator.hasNext()) {
             myGeofenceActual = myGeofenceIterator.next();
             while (myGeofenceIterator.hasNext()) {
                 myGeofenceNext = myGeofenceIterator.next();
-                if (myGeofenceActual.isExit()) {
-                    if (myGeofenceActual.isCamAvailable()) {
-                        if (myGeofenceNext.getJamLevel() == JamLevel.RED ||
-                                (myGeofenceActual.getJamLevel() == JamLevel.YELLOW &&
-                                        myGeofenceNext.getJamLevel() == JamLevel.YELLOW)) {
-                            exitSuggestion = myGeofenceActual;
-                            return;
-                        }
-                    } else {
-                        if (myGeofenceNext.getJamLevel() == JamLevel.RED) {
-                            exitSuggestion = myGeofenceActual;
-                            return;
-                        }
+                if (myGeofenceActual.getJamLevel() != JamLevel.NOCAM) {
+                    if (myGeofenceNext.getJamLevel() == JamLevel.RED ||
+                            (myGeofenceActual.getJamLevel() == JamLevel.YELLOW &&
+                                    myGeofenceNext.getJamLevel() == JamLevel.YELLOW)) {
+                        exitSuggestion = myGeofenceActual;
+                        return;
+                    }
+                } else {
+                    if (myGeofenceNext.getJamLevel() == JamLevel.RED) {
+                        exitSuggestion = myGeofenceActual;
+                        return;
                     }
                 }
                 myGeofenceActual = myGeofenceNext;

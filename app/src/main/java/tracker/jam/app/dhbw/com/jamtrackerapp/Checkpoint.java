@@ -1,23 +1,23 @@
 package tracker.jam.app.dhbw.com.jamtrackerapp;
 
+import android.widget.TextView;
+
 import com.google.android.gms.maps.model.LatLng;
 
-public class Gateway {
+public class Checkpoint {
     private String name;
     private LatLng latLng;
-    private boolean isExit;
-    private boolean sendSuggestion;
+    private float geofenceRadius;
     private boolean drawCircleInMap;
-    private boolean camAvailable;
     private JamLevel jamLevel;
+    private TextView textViewName;
+    private TextView textViewJamLevel;
 
-    public Gateway(String name, LatLng latLng, boolean isExit, boolean sendSuggestion, boolean drawCircleInMap, boolean camAvailable, JamLevel jamLevel) {
+    public Checkpoint(String name, LatLng latLng, float geofenceRadius, boolean drawCircleInMap, JamLevel jamLevel) {
         this.name = name;
         this.latLng = latLng;
-        this.isExit = isExit;
-        this.sendSuggestion = sendSuggestion;
+        this.geofenceRadius = geofenceRadius;
         this.drawCircleInMap = drawCircleInMap;
-        this.camAvailable = camAvailable;
         this.jamLevel = jamLevel;
     }
 
@@ -27,6 +27,9 @@ public class Gateway {
 
     public void setName(String name) {
         this.name = name;
+        if (textViewName != null) {
+            textViewName.setText(name);
+        }
     }
 
     public LatLng getLatLng() {
@@ -37,20 +40,12 @@ public class Gateway {
         this.latLng = latLng;
     }
 
-    public boolean isExit() {
-        return isExit;
+    public float getGeofenceRadius() {
+        return geofenceRadius;
     }
 
-    public void setExit(boolean exit) {
-        isExit = exit;
-    }
-
-    public boolean isSendSuggestion() {
-        return sendSuggestion;
-    }
-
-    public void setSendSuggestion(boolean sendSuggestion) {
-        this.sendSuggestion = sendSuggestion;
+    public void setGeofenceRadius(float geofenceRadius) {
+        this.geofenceRadius = geofenceRadius;
     }
 
     public boolean isDrawCircleInMap() {
@@ -61,19 +56,28 @@ public class Gateway {
         this.drawCircleInMap = drawCircleInMap;
     }
 
-    public boolean isCamAvailable() {
-        return camAvailable;
-    }
-
-    public void setCamAvailable(boolean camAvailable) {
-        this.camAvailable = camAvailable;
-    }
-
     public JamLevel getJamLevel() {
         return jamLevel;
     }
 
     public void setJamLevel(JamLevel jamLevel) {
         this.jamLevel = jamLevel;
+    }
+
+    public TextView getTextViewName() {
+        return textViewName;
+    }
+
+    public void setTextViewName(TextView textViewName) {
+        this.textViewName = textViewName;
+        this.textViewName.setText(name);
+    }
+
+    public TextView getTextViewJamLevel() {
+        return textViewJamLevel;
+    }
+
+    public void setTextViewJamLevel(TextView textViewJamLevel) {
+        this.textViewJamLevel = textViewJamLevel;
     }
 }
