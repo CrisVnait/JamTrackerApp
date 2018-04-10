@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Maps
     private GoogleMap map;
 
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,16 +65,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         moveMapCamera(mapFragment);
 
         addGeofences();
-        requestJamLevels();
 
-        final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
-        calculateSuggestion();
-        if (exitSuggestion != null) {
-            textViewSuggestion.setText(exitSuggestion.getName());
-        } else {
-            textViewSuggestion.setText("Empfehlung nicht vorhanden");
-        }
-
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                requestJamLevels();
+                calculateSuggestion();
+                handler.postDelayed(this, 2000);
+            }
+        }, 2000);
     }
 
     private void assignTextViews() {
@@ -253,5 +254,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         exitSuggestion = myGeofenceActual;
+
+        final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
+
+        if (exitSuggestion != null) {
+            textViewSuggestion.setText(exitSuggestion.getName());
+        } else {
+            textViewSuggestion.setText("Empfehlung nicht vorhanden");
+        }
     }
 }
