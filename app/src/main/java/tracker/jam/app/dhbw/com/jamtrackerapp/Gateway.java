@@ -2,7 +2,7 @@ package tracker.jam.app.dhbw.com.jamtrackerapp;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class MyGeofence {
+public class Gateway {
     private String name;
     private LatLng latLng;
     private boolean isExit;
@@ -11,7 +11,7 @@ public class MyGeofence {
     private boolean camAvailable;
     private JamLevel jamLevel;
 
-    public MyGeofence(String name, LatLng latLng, boolean isExit, boolean sendSuggestion, boolean drawCircleInMap, boolean camAvailable, JamLevel jamLevel) {
+    public Gateway(String name, LatLng latLng, boolean isExit, boolean sendSuggestion, boolean drawCircleInMap, boolean camAvailable, JamLevel jamLevel) {
         this.name = name;
         this.latLng = latLng;
         this.isExit = isExit;

@@ -53,7 +53,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             // multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
-            MyGeofence myGeofence = Constants.CHANGEABLE_GEOFENCE_LIST.get(0);
+            Gateway myGeofence = Constants.CHANGEABLE_GEOFENCE_LIST.get(0);
 
             for (Geofence geofence : triggeringGeofences) {
                 if (geofence.getRequestId().equals(myGeofence.getName())) {

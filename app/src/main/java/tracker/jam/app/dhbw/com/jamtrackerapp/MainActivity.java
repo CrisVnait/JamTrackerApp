@@ -21,15 +21,12 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
-    public static MyGeofence exitSuggestion;
+    public static Gateway exitSuggestion;
 
     //Maps
     private GoogleMap map;
@@ -102,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         queue.add(stringRequest);
     }
 
-    private void textViewSetText(TextView textView, MyGeofence myGeofence, String response, String name) {
+    private void textViewSetText(TextView textView, Gateway myGeofence, String response, String name) {
         try {
             int density = new JSONObject(response).getInt(name);
             textView.setText(String.valueOf(density));
@@ -154,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void populateGeofenceList() {
-        for (MyGeofence geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
+        for (Gateway geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
             geofenceList.add(new Geofence.Builder()
                     .setRequestId(geofence.getName())
                     .setCircularRegion(
@@ -211,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void addCirclesToMap(GoogleMap map) {
-        for (MyGeofence geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
+        for (Gateway geofence : Constants.NON_CHANGEABLE_GEOFENCE_LIST) {
             if (geofence.isDrawCircleInMap()) {
                 map.addCircle(new CircleOptions()
                         .center(geofence.getLatLng())
@@ -224,10 +221,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void calculateSuggestion() {
-        List<MyGeofence> myGeofenceList = Constants.CHANGEABLE_GEOFENCE_LIST;
-        Iterator<MyGeofence> myGeofenceIterator = myGeofenceList.iterator();
-        MyGeofence myGeofenceActual = null;
-        MyGeofence myGeofenceNext = null;
+        List<Gateway> myGeofenceList = Constants.CHANGEABLE_GEOFENCE_LIST;
+        Iterator<Gateway> myGeofenceIterator = myGeofenceList.iterator();
+        Gateway myGeofenceActual = null;
+        Gateway myGeofenceNext = null;
         if (myGeofenceIterator.hasNext()) {
             myGeofenceActual = myGeofenceIterator.next();
             while (myGeofenceIterator.hasNext()) {
