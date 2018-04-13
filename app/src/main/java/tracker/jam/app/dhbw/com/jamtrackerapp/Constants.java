@@ -39,6 +39,7 @@ final class Constants {
     }
 
     static {
+        ETTLINGEN.setLastExit(true);
         populateEditableCheckpointList();
         populateUnchangeableCheckpointList();
         populateGeofenceMap();

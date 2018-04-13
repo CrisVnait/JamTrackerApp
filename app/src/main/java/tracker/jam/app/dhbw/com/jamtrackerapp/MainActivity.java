@@ -36,8 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -46,12 +45,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
-    public static Checkpoint exitSuggestion;
 
-    //Maps
-    private GoogleMap map;
-
+    //Callback
     private Handler handler = new Handler();
+
+    private GoogleMap map;
+    public static Checkpoint exitSuggestion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,37 +229,49 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void calculateSuggestion() {
-        Iterator<Checkpoint> myGeofenceIterator = Constants.EDITABLE_CHECKPOINT_LIST.iterator();
-        Checkpoint myGeofenceActual = null;
-        Checkpoint myGeofenceNext = null;
-        if (myGeofenceIterator.hasNext()) {
-            myGeofenceActual = myGeofenceIterator.next();
-            while (myGeofenceIterator.hasNext()) {
-                myGeofenceNext = myGeofenceIterator.next();
-                if (myGeofenceActual.getJamLevel() != JamLevel.NOCAM) {
-                    if (myGeofenceNext.getJamLevel() == JamLevel.RED ||
-                            (myGeofenceActual.getJamLevel() == JamLevel.YELLOW &&
-                                    myGeofenceNext.getJamLevel() == JamLevel.YELLOW)) {
-                        exitSuggestion = myGeofenceActual;
-                        return;
-                    }
-                } else {
-                    if (myGeofenceNext.getJamLevel() == JamLevel.RED) {
-                        exitSuggestion = myGeofenceActual;
-                        return;
-                    }
-                }
-                myGeofenceActual = myGeofenceNext;
+        ListIterator<Checkpoint> checkpointListIterator = Constants.EDITABLE_CHECKPOINT_LIST.listIterator();
+        Checkpoint checkpointNext;
+        while (checkpointListIterator.hasNext()) {
+            checkpointNext = checkpointListIterator.next();
+            if (checkpointNext.isLastExit() || checkpointNext.getJamLevel() == JamLevel.RED ||
+                    getJamLevelNextCam(checkpointListIterator) == JamLevel.RED) {
+                setSuggestion(checkpointNext);
+                return;
             }
         }
-        exitSuggestion = myGeofenceActual;
+        setSuggestion(null);
+    }
+
+    private JamLevel getJamLevelNextCam(ListIterator<Checkpoint> checkpointListIterator) {
+        int counter = 0;
+
+        while (checkpointListIterator.hasNext()) {
+            Checkpoint checkpoint = checkpointListIterator.next();
+            counter++;
+            if (checkpoint.getJamLevel() != JamLevel.NOCAM) {
+                resetIterator(checkpointListIterator, counter);
+                return checkpoint.getJamLevel();
+            }
+        }
+        resetIterator(checkpointListIterator, counter);
+        return null;
+    }
+
+    private void setSuggestion(Checkpoint checkpoint) {
+        exitSuggestion = checkpoint;
 
         final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
 
         if (exitSuggestion != null) {
-            textViewSuggestion.setText(exitSuggestion.getName());
+            textViewSuggestion.setText("Empfehlung: " + exitSuggestion.getName());
         } else {
             textViewSuggestion.setText("Empfehlung nicht vorhanden");
+        }
+    }
+
+    private void resetIterator(ListIterator<Checkpoint> checkpointListIterator, int counter) {
+        for (int i = 0; i < counter; i++) {
+            checkpointListIterator.previous();
         }
     }
 }

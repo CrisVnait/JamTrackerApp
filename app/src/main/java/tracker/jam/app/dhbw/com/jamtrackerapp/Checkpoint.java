@@ -12,6 +12,7 @@ public class Checkpoint {
     private JamLevel jamLevel;
     private TextView textViewName;
     private TextView textViewJamLevel;
+    private boolean isLastExit;
 
     public Checkpoint(String name, LatLng latLng, float geofenceRadius, boolean drawCircleInMap, JamLevel jamLevel) {
         this.name = name;
@@ -79,5 +80,13 @@ public class Checkpoint {
 
     public void setTextViewJamLevel(TextView textViewJamLevel) {
         this.textViewJamLevel = textViewJamLevel;
+    }
+
+    public boolean isLastExit() {
+        return isLastExit;
+    }
+
+    public void setLastExit(boolean lastExit) {
+        isLastExit = lastExit;
     }
 }
