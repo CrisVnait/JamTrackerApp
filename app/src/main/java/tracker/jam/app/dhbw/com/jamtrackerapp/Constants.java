@@ -17,12 +17,12 @@ final class Constants {
     public static final float GEOFENCE_RADIUS_200_METERS = 200;
 
     //Checkpoints
-    public static Checkpoint ENTRANCE = new Checkpoint("CP Startpunkt", new LatLng(49.118115, 8.551332), GEOFENCE_RADIUS_200_METERS, false, JamLevel.NOCAM);
-    public static Checkpoint KA_NORD = new Checkpoint("Karlsruhe Nord", new LatLng(49.019773, 8.470468), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
-    public static Checkpoint KA_DURLACH = new Checkpoint(" Karlsruhe Durlach", new LatLng(49.005600, 8.454503), GEOFENCE_RADIUS_750_METERS, true, JamLevel.NOCAM);
-    public static Checkpoint KA_MITTE = new Checkpoint("Karlsruhe Mitte", new LatLng(48.993609, 8.437117), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
-    public static Checkpoint KA_DREIECK = new Checkpoint("Dreieck Karlsruhe", new LatLng(48.979249, 8.436886), GEOFENCE_RADIUS_750_METERS, true, JamLevel.NOCAM);
-    public static Checkpoint ETTLINGEN = new Checkpoint("Ettlingen", new LatLng(48.961417, 8.409667), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
+    public static Checkpoint ENTRANCE = new Checkpoint("CP Startpunkt", new LatLng(49.118115, 8.551332), GEOFENCE_RADIUS_200_METERS, false, JamLevel.NOCAM, null);
+    public static Checkpoint KA_NORD = new Checkpoint("Karlsruhe Nord", new LatLng(49.019773, 8.470468), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED, "eins");
+    public static Checkpoint KA_DURLACH = new Checkpoint(" Karlsruhe Durlach", new LatLng(49.005600, 8.454503), GEOFENCE_RADIUS_750_METERS, false, JamLevel.NOCAM, null);
+    public static Checkpoint KA_MITTE = new Checkpoint("Karlsruhe Mitte", new LatLng(48.993609, 8.437117), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED, "zwei");
+    public static Checkpoint KA_DREIECK = new Checkpoint("Dreieck Karlsruhe", new LatLng(48.979249, 8.436886), GEOFENCE_RADIUS_750_METERS, false, JamLevel.NOCAM, null);
+    public static Checkpoint ETTLINGEN = new Checkpoint("Ettlingen", new LatLng(48.961417, 8.409667), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED, "vier");
 
     //Density
     public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";

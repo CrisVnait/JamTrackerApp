@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -27,19 +29,27 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    //Bitmap's
+    Bitmap bitmapGreen;
+    Bitmap bitmapYellow;
+    Bitmap bitmapRed;
+    Bitmap bitmapExit;
 
     //Geofencing
     private ArrayList<Geofence> geofenceList;
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        assignBitmaps();
         assignTextViews();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
@@ -69,9 +80,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
                 requestJamLevels();
                 calculateSuggestion();
+                addMarkersToMap(map);
                 handler.postDelayed(this, 2000);
             }
         }, 2000);
+    }
+
+    private void assignBitmaps() {
+        bitmapGreen = BitmapFactory.decodeResource(getResources(), R.drawable.green);
+        bitmapYellow = BitmapFactory.decodeResource(getResources(), R.drawable.yellow);
+        bitmapRed = BitmapFactory.decodeResource(getResources(), R.drawable.red);
+        bitmapExit = BitmapFactory.decodeResource(getResources(), R.drawable.exit);
     }
 
     private void assignTextViews() {
@@ -149,9 +168,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        setJamLevel(Constants.KA_NORD, response, "eins");
-                        setJamLevel(Constants.KA_MITTE, response, "zwei");
-                        setJamLevel(Constants.ETTLINGEN, response, "vier");
+                        Iterator<Checkpoint> checkpointIterator = Constants.UNCHANGEABLE_CHECKPOINT_LIST.iterator();
+                        while (checkpointIterator.hasNext()) {
+                            setAndDisplayJamLevel(checkpointIterator.next(), response);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -164,21 +184,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         queue.add(stringRequest);
     }
 
-    private void setJamLevel(Checkpoint checkpoint, String response, String name) {
+    private void setAndDisplayJamLevel(Checkpoint checkpoint, String response) {
         try {
-            int density = new JSONObject(response).getInt(name);
-            if (isBetween(density, 0, 33)) {
-                checkpoint.setJamLevel(JamLevel.GREEN);
-                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorGreen);
-            } else if (isBetween(density, 34, 66)) {
-                checkpoint.setJamLevel(JamLevel.YELLOW);
-                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorOrange);
-            } else if (isBetween(density, 67, 100)) {
-                checkpoint.setJamLevel(JamLevel.RED);
-                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorRed);
+            if (checkpoint.getJamLevel() == JamLevel.NOCAM) {
+                if (checkpoint == exitSuggestion) {
+                    checkpoint.setBitmap(bitmapExit);
+                } else {
+                    checkpoint.setBitmap(null);
+                }
             } else {
-                checkpoint.setJamLevel(JamLevel.UNDEFINED);
-                checkpoint.getTextViewJamLevel().setBackgroundResource(R.color.colorBlack);
+                int density = new JSONObject(response).getInt(checkpoint.getJsonName());
+                if (isBetween(density, 0, 33)) {
+                    checkpoint.setJamLevel(JamLevel.GREEN);
+                    checkpoint.setTwoBitmap(bitmapGreen, bitmapExit);
+                    setTextViewJamLevel(checkpoint);
+                } else if (isBetween(density, 34, 66)) {
+                    checkpoint.setJamLevel(JamLevel.YELLOW);
+                    checkpoint.setTwoBitmap(bitmapYellow, bitmapExit);
+                    setTextViewJamLevel(checkpoint);
+                } else if (isBetween(density, 67, 100)) {
+                    checkpoint.setJamLevel(JamLevel.RED);
+                    checkpoint.setTwoBitmap(bitmapRed, bitmapExit);
+                    setTextViewJamLevel(checkpoint);
+                } else {
+                    checkpoint.setJamLevel(JamLevel.UNDEFINED);
+                    checkpoint.setBitmap(null);
+                    checkpoint.getTextViewJamLevel().setText(null);
+                }
             }
         } catch (JSONException e) {
             //parse error
@@ -187,6 +219,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean isBetween(int density, int lower, int upper) {
         return lower <= density && density <= upper;
+    }
+
+    private void setTextViewJamLevel(Checkpoint checkpoint) {
+        checkpoint.getTextViewJamLevel().setCompoundDrawablesWithIntrinsicBounds(null,
+                null, new BitmapDrawable(getResources(), checkpoint.getBitmap()), null);
     }
 
     @Override
@@ -199,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        addCirclesToMap(map);
     }
 
     private void moveMapCamera(SupportMapFragment supportMapFragment) {
@@ -215,15 +251,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void addCirclesToMap(GoogleMap map) {
+    private void addMarkersToMap(GoogleMap map) {
+        map.clear();
         for (Checkpoint checkpoint : Constants.UNCHANGEABLE_CHECKPOINT_LIST) {
-            if (checkpoint.isDrawCircleInMap()) {
-                map.addCircle(new CircleOptions()
-                        .center(checkpoint.getLatLng())
-                        .radius(250)
-                        .fillColor(Color.parseColor("#7F202fb1"))
-                        .strokeColor(Color.BLACK)
-                        .strokeWidth(3));
+            if (checkpoint.getBitmap() != null) {
+                map.addMarker(new MarkerOptions()
+                        .position(checkpoint.getLatLng())
+                        .anchor(0.3F, 0.6F)
+                        .icon(BitmapDescriptorFactory.fromBitmap(checkpoint.getBitmap())));
             }
         }
     }
