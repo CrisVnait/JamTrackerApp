@@ -296,9 +296,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         exitSuggestion = checkpoint;
 
         final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
+        final TextView textViewSuggestionDensity = findViewById(R.id.textViewSuggestionDensity);
 
         if (exitSuggestion != null) {
-            textViewSuggestion.setText("Empfehlung: " + exitSuggestion.getName());
+            textViewSuggestion.setText("Tipp: " + exitSuggestion.getName());
+            textViewSuggestionDensity.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                    new BitmapDrawable(getResources(), exitSuggestion.getBitmap()), null);
         } else {
             textViewSuggestion.setText("Empfehlung nicht vorhanden");
         }
