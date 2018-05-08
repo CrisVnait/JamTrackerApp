@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -60,7 +62,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Handler handler = new Handler();
 
     private GoogleMap map;
+    SupportMapFragment mapFragment;
+
     public static Checkpoint exitSuggestion;
+    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +75,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         assignBitmaps();
         assignTextViews();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
-        moveMapCamera(mapFragment);
 
         addGeofences();
 
@@ -80,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
                 requestJamLevels();
                 calculateSuggestion();
-                addMarkersToMap(map);
+                if (map != null) {
+                    addMarkersToMap(map);
+                }
                 handler.postDelayed(this, 2000);
             }
         }, 2000);
@@ -177,6 +183,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if (status != TextToSpeech.ERROR) {
+                                    textToSpeech.setLanguage(Locale.GERMAN);
+                                    textToSpeech.speak("Fehler beim Hinzufügen der Geofences", TextToSpeech.QUEUE_FLUSH, null);
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -229,13 +244,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(49.019773, 8.470468), 15));
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
         map.getUiSettings().setAllGesturesEnabled(false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
         }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        moveMapCamera(mapFragment);
     }
 
     private void moveMapCamera(SupportMapFragment supportMapFragment) {
