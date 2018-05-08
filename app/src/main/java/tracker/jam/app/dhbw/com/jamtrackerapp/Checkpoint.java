@@ -22,16 +22,13 @@ public class Checkpoint {
     private TextView textViewJamLevel;
     private boolean isLastExit;
     private Bitmap bitmap;
-    private String jsonName;
-    private boolean isExitSuggestion;
 
-    public Checkpoint(String name, LatLng latLng, float geofenceRadius, boolean drawCircleInMap, JamLevel jamLevel, String jsonName) {
+    public Checkpoint(String name, LatLng latLng, float geofenceRadius, boolean drawCircleInMap, JamLevel jamLevel) {
         this.name = name;
         this.latLng = latLng;
         this.geofenceRadius = geofenceRadius;
         this.drawCircleInMap = drawCircleInMap;
         this.jamLevel = jamLevel;
-        this.jsonName = jsonName;
     }
 
     public String getName() {
@@ -121,13 +118,5 @@ public class Checkpoint {
         } else {
             this.bitmap = bitmap1;
         }
-    }
-
-    public String getJsonName() {
-        return jsonName;
-    }
-
-    public void setJsonName(String jsonName) {
-        this.jsonName = jsonName;
     }
 }

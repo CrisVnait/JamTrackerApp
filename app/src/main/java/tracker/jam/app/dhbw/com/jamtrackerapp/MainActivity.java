@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -121,7 +122,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if (status != TextToSpeech.ERROR) {
+                                    textToSpeech.setLanguage(Locale.GERMAN);
+                                    textToSpeech.speak("Fehler beim Hinzufügen der Geofences", TextToSpeech.QUEUE_FLUSH, null);
+                                }
+                            }
+                        });
                     }
+
                 });
     }
 
@@ -183,15 +194,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-                            @Override
-                            public void onInit(int status) {
-                                if (status != TextToSpeech.ERROR) {
-                                    textToSpeech.setLanguage(Locale.GERMAN);
-                                    textToSpeech.speak("Fehler beim Hinzufügen der Geofences", TextToSpeech.QUEUE_FLUSH, null);
-                                }
-                            }
-                        });
                     }
                 });
 
@@ -208,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     checkpoint.setBitmap(null);
                 }
             } else {
-                int density = new JSONObject(response).getInt(checkpoint.getJsonName());
+                int density = new JSONObject(response).getInt(checkpoint.getName());
                 if (isBetween(density, 0, 33)) {
                     checkpoint.setJamLevel(JamLevel.GREEN);
                     checkpoint.setTwoBitmap(bitmapGreen, bitmapExit);
