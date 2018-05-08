@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (exitSuggestion != null) {
             textViewSuggestion.setText(exitSuggestion.getName());
         } else {
-            textViewSuggestion.setText("Empfehlung nicht vorhanden");
+            textViewSuggestion.setText("nicht vorhanden");
         }
     }
 
