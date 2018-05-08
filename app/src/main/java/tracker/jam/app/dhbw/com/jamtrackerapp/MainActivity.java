@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -315,12 +314,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         exitSuggestion = checkpoint;
 
         final TextView textViewSuggestion = findViewById(R.id.textViewSuggestion);
-        final TextView textViewSuggestionDensity = findViewById(R.id.textViewSuggestionDensity);
 
         if (exitSuggestion != null) {
-            textViewSuggestion.setText("Tipp: " + exitSuggestion.getName());
-            textViewSuggestionDensity.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    new BitmapDrawable(getResources(), exitSuggestion.getBitmap()), null);
+            textViewSuggestion.setText(exitSuggestion.getName());
         } else {
             textViewSuggestion.setText("Empfehlung nicht vorhanden");
         }
