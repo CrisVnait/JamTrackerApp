@@ -60,9 +60,16 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             for (Geofence geofence : triggeringGeofences) {
                 if (geofence.getRequestId().equals(checkpoint.getName())) {
                     // Get the transition details as a String.
-                    String geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition, triggeringGeofences);
+                    String triggeringGeofencesId = getTriggeringGeofencesIdsString(geofenceTransition, triggeringGeofences);
                     // Send notification and log the transition details.
-                    speak(geofenceTransitionDetails);
+                    String exitSuggestion = MainActivity.exitSuggestion.getName();
+                    if (triggeringGeofencesId.equals(exitSuggestion)) {
+                        speak("Empfohlen wird, die Autobahn an der nächsten Ausfahrt " + triggeringGeofencesId + " zu verlassen.");
+                    } else if (triggeringGeofencesId.equals(Constants.ENTRANCE.getName())) {
+                        speak("Empfohlen wird, die Autobahn an der Ausfahrt " + exitSuggestion + " zu verlassen.");
+                    } else {
+                        speak("Bleiben Sie an der nächsten Ausfahrt auf der Autobahn. Empfohlen wird, die Autobahn an der Ausfahrt " + exitSuggestion + " zu verlassen.");
+                    }
                     Constants.EDITABLE_CHECKPOINT_LIST.remove(0);
                 } else {
                     for (String key : Constants.GEOFENCE_MAP.keySet()) {
@@ -82,9 +89,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
      * @param triggeringGeofences The geofence(s) triggered.
      * @return The transition details formatted as String.
      */
-    private String getGeofenceTransitionDetails(int geofenceTransition, List<Geofence> triggeringGeofences) {
-
-        String geofenceTransitionString = getTransitionString(geofenceTransition);
+    private String getTriggeringGeofencesIdsString(int geofenceTransition, List<Geofence> triggeringGeofences) {
 
         // Get the Ids of each geofence that was triggered.
         ArrayList<String> triggeringGeofencesIdsList = new ArrayList<>();
@@ -93,7 +98,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         }
         String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
 
-        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
+        return triggeringGeofencesIdsString;
     }
 
     /**
