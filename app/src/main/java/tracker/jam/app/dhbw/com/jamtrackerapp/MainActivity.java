@@ -126,9 +126,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onFailure(@NonNull Exception e) {
                     }
-                }
-    });
-}
+                });
+    }
 
     private void populateGeofenceList() {
         for (Map.Entry<String, LatLng> geofence : Constants.GEOFENCE_MAP.entrySet()) {
