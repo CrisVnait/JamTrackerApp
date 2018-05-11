@@ -1,12 +1,16 @@
 package tracker.jam.app.dhbw.com.jamtrackerapp;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -20,7 +24,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -42,7 +46,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -65,12 +68,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     SupportMapFragment mapFragment;
 
     public static Checkpoint exitSuggestion;
-    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        statusCheck();
 
         assignBitmaps();
         assignTextViews();
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (map != null) {
                     addMarkersToMap(map);
                 }
-                handler.postDelayed(this, 2000);
+                handler.postDelayed(this, 1000);
             }
         }, 2000);
     }
@@ -121,19 +125,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-                            @Override
-                            public void onInit(int status) {
-                                if (status != TextToSpeech.ERROR) {
-                                    textToSpeech.setLanguage(Locale.GERMAN);
-                                    textToSpeech.speak("Fehler beim Hinzufügen der Geofences", TextToSpeech.QUEUE_FLUSH, null);
-                                }
-                            }
-                        });
                     }
-
-                });
-    }
+                }
+    });
+}
 
     private void populateGeofenceList() {
         for (Map.Entry<String, LatLng> geofence : Constants.GEOFENCE_MAP.entrySet()) {
@@ -180,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void requestJamLevels() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY,
-                new Response.Listener<String>() {
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         Iterator<Checkpoint> checkpointIterator = Constants.UNCHANGEABLE_CHECKPOINT_LIST.iterator();
                         while (checkpointIterator.hasNext()) {
                             setAndDisplayJamLevel(checkpointIterator.next(), response);
@@ -200,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         queue.add(stringRequest);
     }
 
-    private void setAndDisplayJamLevel(Checkpoint checkpoint, String response) {
+    private void setAndDisplayJamLevel(Checkpoint checkpoint, JSONObject response) {
         try {
             if (checkpoint.getJamLevel() == JamLevel.NOCAM) {
                 if (checkpoint == exitSuggestion) {
@@ -209,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     checkpoint.setBitmap(null);
                 }
             } else {
-                int density = new JSONObject(response).getInt(checkpoint.getName());
+                int density = response.getInt(checkpoint.getName());
                 if (isBetween(density, 0, 33)) {
                     checkpoint.setJamLevel(JamLevel.GREEN);
                     checkpoint.setTwoBitmap(bitmapGreen, bitmapExit);
@@ -325,5 +320,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (int i = 0; i < counter; i++) {
             checkpointListIterator.previous();
         }
+    }
+
+    public void statusCheck() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            buildAlertMessageNoGps();
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("WLAN und Netzwerke müssen für den Standortzugriff verwendet werden! Bitte aktivieren und App neustarten.")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        finish();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 }
