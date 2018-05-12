@@ -60,15 +60,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
+    private Boolean areGeofencesAdded = false;
 
     //Callback
     private Handler handler = new Handler();
 
+    //Maps
     private GoogleMap map;
     SupportMapFragment mapFragment;
 
     public static Checkpoint exitSuggestion;
-    private Boolean areGeofencesAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +81,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
-
-        addGeofences();
 
         handler.postDelayed(new Runnable() {
             public void run() {
