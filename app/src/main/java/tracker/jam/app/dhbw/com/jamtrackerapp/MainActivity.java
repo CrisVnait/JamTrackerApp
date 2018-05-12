@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,13 +68,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     SupportMapFragment mapFragment;
 
     public static Checkpoint exitSuggestion;
+    private Boolean areGeofencesAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        statusCheck();
 
         assignBitmaps();
         assignTextViews();
@@ -93,6 +93,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 handler.postDelayed(this, 1000);
             }
         }, 2000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        statusCheck();
+        if (!areGeofencesAdded) {
+            addGeofences();
+        }
     }
 
     private void assignBitmaps() {
@@ -121,9 +130,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
         }
         geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        areGeofencesAdded = true;
+                    }
+                })
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        areGeofencesAdded = false;
                     }
                 });
     }
@@ -334,7 +350,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        finish();
                     }
                 });
         final AlertDialog alert = builder.create();
