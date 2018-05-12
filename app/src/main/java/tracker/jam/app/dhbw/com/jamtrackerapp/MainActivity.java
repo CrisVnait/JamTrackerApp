@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void requestJamLevels() {
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
+        queue.add(jsonObjectRequest);
     }
 
     private void setAndDisplayJamLevel(Checkpoint checkpoint, JSONObject response) {
