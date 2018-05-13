@@ -103,6 +103,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (areGeofencesAdded) {
+            removeGeofences();
+        }
+    }
+
     private void assignBitmaps() {
         bitmapGreen = BitmapFactory.decodeResource(getResources(), R.drawable.green);
         bitmapYellow = BitmapFactory.decodeResource(getResources(), R.drawable.yellow);
@@ -138,7 +146,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                    }
+                });
+    }
+
+    private void removeGeofences() {
+        geofencingClient.removeGeofences(getGeofencePendingIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
                         areGeofencesAdded = false;
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
                     }
                 });
     }
