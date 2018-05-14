@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 requestJamLevels();
                 calculateSuggestion();
                 if (map != null) {
-                    addMarkersToMap(map);
+                    addMarkersToMap();
                 }
                 handler.postDelayed(this, 1000);
             }
@@ -283,11 +283,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        moveMapCamera(mapFragment);
+        moveMapCamera();
     }
 
-    private void moveMapCamera(SupportMapFragment supportMapFragment) {
-        final View mapView = supportMapFragment.getView();
+    private void moveMapCamera() {
+        final View mapView = mapFragment.getView();
         mapView.post(new Runnable() {
             @Override
             public void run() {
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void addMarkersToMap(GoogleMap map) {
+    private void addMarkersToMap() {
         map.clear();
         for (Checkpoint checkpoint : Constants.UNCHANGEABLE_CHECKPOINT_LIST) {
             if (checkpoint.getBitmap() != null) {
