@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (checkpoint.getBitmap() != null) {
                 map.addMarker(new MarkerOptions()
                         .position(checkpoint.getLatLng())
-                        .anchor(0.3F, 0.6F)
+                        .anchor(0.5F, 0.5F)
                         .icon(BitmapDescriptorFactory.fromBitmap(checkpoint.getBitmap())));
             }
         }
