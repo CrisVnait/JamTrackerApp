@@ -36,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,7 +49,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     //Bitmap's
     Bitmap bitmapGreen;
@@ -286,7 +287,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.setOnMarkerClickListener(this);
         moveMapCamera();
+
     }
 
     private void moveMapCamera() {
@@ -300,6 +303,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 map.moveCamera(CameraUpdateFactory.newLatLngBounds(Constants.MAPS_LATLNG_BOUNDS, width, height, padding));
             }
         });
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return true;
     }
 
     private void addMarkersToMap() {
