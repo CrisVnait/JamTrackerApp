@@ -24,7 +24,7 @@ final class Constants {
     public static Checkpoint ETTLINGEN = new Checkpoint("Ettlingen", new LatLng(48.961417, 8.409667), GEOFENCE_RADIUS_750_METERS, true, JamLevel.UNDEFINED);
 
     //Density
-    public static final String SERVER_URL_DENSITY = "http://193.196.7.78:8079/traffic-info";
+    public static final String SERVER_URL_DENSITY = "http://my-json-server.typicode.com/crisvnait/jsondummy/test";
 
     //Maps
     public static LatLngBounds MAPS_LATLNG_BOUNDS = new LatLngBounds(Constants.ETTLINGEN.getLatLng(), Constants.KA_NORD.getLatLng());

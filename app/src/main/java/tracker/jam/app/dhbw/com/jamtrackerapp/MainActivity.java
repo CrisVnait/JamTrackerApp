@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
+        startService(new Intent(this, LocationUpdatesService.class));
+
         handler.postDelayed(new Runnable() {
             public void run() {
                 requestJamLevels();
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (areGeofencesAdded) {
             removeGeofences();
         }
+        stopService(new Intent(this, LocationUpdatesService.class));
     }
 
     private void assignBitmaps() {
