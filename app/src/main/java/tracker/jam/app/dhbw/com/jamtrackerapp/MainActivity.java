@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap map;
     SupportMapFragment mapFragment;
 
+    //Volley
+    private RequestQueue queue;
+
     public static Checkpoint exitSuggestion;
 
     @Override
@@ -236,7 +239,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-        RequestQueue queue = Volley.newRequestQueue(this);
+        if (queue == null) {
+            queue = Volley.newRequestQueue(this);
+        }
         queue.add(jsonObjectRequest);
     }
 
