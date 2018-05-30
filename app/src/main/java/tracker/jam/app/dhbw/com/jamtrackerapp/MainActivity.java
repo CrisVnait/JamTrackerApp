@@ -87,10 +87,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         handler.postDelayed(new Runnable() {
             public void run() {
-                requestJamLevels();
-                calculateSuggestion();
-                if (map != null) {
-                    addMarkersToMap();
+                try {
+                    requestJamLevels();
+                    calculateSuggestion();
+                    if (map != null) {
+                        addMarkersToMap();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 handler.postDelayed(this, 1000);
             }
@@ -114,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             removeGeofences();
         }
         stopService(new Intent(this, LocationUpdatesService.class));
-
     }
 
     private void assignBitmaps() {
@@ -216,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return geofencePendingIntent;
     }
 
-    public void requestJamLevels() {
+    public void requestJamLevels() throws Exception {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Constants.SERVER_URL_DENSITY, null,
                 new Response.Listener<JSONObject>() {
                     @Override
