@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (!areGeofencesAdded) {
             addGeofences();
         }
-        geofencePendingIntent.cancel();
     }
 
     @Override
@@ -118,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             removeGeofences();
         }
         stopService(new Intent(this, LocationUpdatesService.class));
+        geofencePendingIntent.cancel();
     }
 
     private void assignBitmaps() {
